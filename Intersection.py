@@ -8,6 +8,11 @@ class Intersection:
         self.toward_lanes = lanes_to_intersection
         self.away_lanes = lanes_away_from_intersection
 
+        #keep an array of the cars that are in the intersection
+        #have to make sure the cars that are in the intersection go into the right lanes after
+        #order them in the array so the first element goes into one lane, the second goes into another
+        self.in_intersection = []
+
         #which phase the intersection is on
         self.phase = 0
 
