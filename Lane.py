@@ -19,6 +19,10 @@ class Lane:
     def addCar(self):
         self.contents[0] = Car()
 
+    #be able to add a car that was previously in the intersection into an away lane
+    def addx(self,x):
+        self.contents[0] = x
+
     #move all of the contents of the lane forward and return the end of the lane and put a 0 at the start of the lane
     def move(self):
         new_contents = []

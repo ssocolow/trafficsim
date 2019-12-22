@@ -5,6 +5,9 @@ class Car:
 
     def tick(self):
         self.wait_time += 1
+
+
+
     # def __init__(self, pos, size):
     #     self.pos = matrix2d.Matrix.array_to_matrix(pos)
     #     self.size = size
