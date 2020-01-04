@@ -13,6 +13,9 @@ class Intersection:
         #check diagram to see which elements in the array represent where in the intersection model
         self.in_intersection = [0,0,0,0,0,0,0,0,0,0,0,0]
 
+        #an array to store the in intersection cars
+        self.iic = []
+
         #which phase the intersection is on 0 equals all red lights
         self.phase = 0
 
@@ -34,9 +37,6 @@ class Intersection:
         #phase5 has lanes 3,4,6,7
         self.phase5 = [self.toward_lanes[2],self.toward_lanes[3],self.toward_lanes[5],self.toward_lanes[6]]
 
-
-
-
         #make away lanes, 1 is opposite lane 1 and 2, 2 is opposite 3 and 4, 3 is opposite 5, 4 is opposite 6 and 7
         self.away1 = self.away_lanes[0]
         self.away2 = self.away_lanes[1]
@@ -44,7 +44,13 @@ class Intersection:
         self.away4 = self.away_lanes[3]
 
         #this will decide which away lane the car will go into (away lane 1,2,3,4)
+        #have to rethink this because now cars know where to go
         self.which_away_lane = 0
+
+        #these are the paths from the lane to the intersection ordered by toward lanes then by left,forward,right
+        #for example the first path is lane 1 going left
+        #paths have numbers corresponding with where they are in the intersection
+        self.paths = [[12,9,5,4,1],[12,9,5,3],[10],[6,5,4,8,11],[3,2,1],[3],[2,4,8,9,10],[2,4,8,11],[1],[7,8,9,5,3],[7,8,9,10],[11]]
 
     def tick_wait_time(self):
         #have all the cars increase their wait time by 1 that are in the lanes going toward the intersection
@@ -76,14 +82,13 @@ class Intersection:
         self.away3.addx(self.in_intersection[10])
         self.away4.addx(self.in_intersection[9])
 
-        #clear the intersection
-        #the intersection sometimes can't be cleared because of situations like the one described above
-        self.in_intersection = [0,0,0,0]
-
         if self.phase == 3:
             #this is only lane 5, which can turn into away lane 2,3,4
+            #move the cars in the intersection first so that the cars behind can come in
             #move lane 5 forward and put the end of lane 5 into the in_intersection array
             #which spot in the in_intersection array depends on which lane it will end up in
+
+            car = self.phase3[0].contents[self.phase3[0].len - 1]
             self.in_intersection[self.which_away_lane] = self.phase3[0].move()
 
         if self.phase == 2:
