@@ -17,7 +17,7 @@ class Car:
         #the car will know its path based on where it spawns and where it is going
         self.path = 0
 
-        #store the index of where it is in the intersection (the in intersection index)
+        #store the index of where it is in its path through the intersection (the in intersection index)
         #when it is -1, it is not in the intersection
         #when it is 0, it is in the first position in its path through the intersection
         self.iii = -1
@@ -104,3 +104,5 @@ class Car:
             self.loc = self.path[self.iii]
         else:
             #add the car to the right away lane
+            #in the intersection class, if this returns a 2, then move it into the right away lane
+            return 2

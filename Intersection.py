@@ -1,4 +1,5 @@
 from Lane import Lane
+from Car import Car
 
 #intersection class will have an array of lanes
 #lanes going toward the intersection should put the cars at the end into the intersection, not in any lane, then should be put in their lane going away from intersection
@@ -43,14 +44,19 @@ class Intersection:
         self.away3 = self.away_lanes[2]
         self.away4 = self.away_lanes[3]
 
-        #this will decide which away lane the car will go into (away lane 1,2,3,4)
-        #have to rethink this because now cars know where to go
-        self.which_away_lane = 0
+        #this approach of using the intersection to decide where the cars will go is now not in use
+        #now the cars know where they will go
+        # #this will decide which away lane the car will go into (away lane 1,2,3,4)
+        # #have to rethink this because now cars know where to go
+        # self.which_away_lane = 0
 
         #these are the paths from the lane to the intersection ordered by toward lanes then by left,forward,right
         #for example the first path is lane 1 going left
         #paths have numbers corresponding with where they are in the intersection
         self.paths = [[12,9,5,4,1],[12,9,5,3],[10],[6,5,4,8,11],[3,2,1],[3],[2,4,8,9,10],[2,4,8,11],[1],[7,8,9,5,3],[7,8,9,10],[11]]
+
+
+
 
     def tick_wait_time(self):
         #have all the cars increase their wait time by 1 that are in the lanes going toward the intersection
@@ -59,6 +65,16 @@ class Intersection:
             #move the car counters foward
                 if lane.contents[j] != 0:
                     lane.contents[j].tick()
+
+
+
+    #add a car to the beginning of one of the toward lanes after the toward lane is moved forward and it is checked that there isn't a car in the first spot
+    def addCar(self):
+        x = Car()
+        if self.toward_lanes[x.origin - 1][0] == 0:
+            self.toward_lanes[x.origin - 1].addx(x)
+
+
 
     #move forward in time once
     #each move will be equal to some amount of real time (probably less than a second)
@@ -69,6 +85,7 @@ class Intersection:
     #have to implement right on red
     def move(self):
 
+        #increase the wait time of all of the cars in the toward lanes
         self.tick_wait_time()
 
         #move all of the cars that are going away from the intersection
@@ -110,3 +127,13 @@ class Intersection:
 
         if self.phase == 5:
             self.in_intersection[self.which_away_lane] = self.phase5[0].move()
+
+
+
+    #printing function to see everything in the intersection for debugging
+    def print(self):
+        for lane in self.toward_lanes:
+            print(lane.contents)
+        for lane in self.away_lanes:
+            print(lane.contents)
+        print(self.in_intersection)

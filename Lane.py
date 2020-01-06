@@ -15,9 +15,10 @@ class Lane:
         for i in range(self.len):
             self.contents.append(0)
 
-    #put a car at the start of the lane
-    def addCar(self):
-        self.contents[0] = Car()
+    #now adding cars is done by intersection
+    # #put a car at the start of the lane
+    # def addCar(self):
+    #     self.contents[0] = Car()
 
     #be able to add a car that was previously in the intersection into an away lane
     def addx(self,x):
