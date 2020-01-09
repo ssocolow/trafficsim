@@ -12,4 +12,5 @@ away = []
 for i in range(4):
     away.append(Lane(10,-1))
 
+#make the intersection
 I = Intersection(toward, away)

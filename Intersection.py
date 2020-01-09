@@ -1,3 +1,4 @@
+#import lane and car functionality
 from Lane import Lane
 from Car import Car
 
@@ -76,6 +77,33 @@ class Intersection:
 
 
 
+    #cars still move up in lanes that have a red light, but the have to stop and wait behind each other
+    def moveRedLanes(self):
+        pass
+
+
+    #move lanes with a green light
+    #gets an array of lanes as an input
+    #moves the lanes in the array forward 1 time step
+    #returns an array of cars that have moved through the lane and are now in the intersection
+    def moveLane(self, lanes):
+        endCars = []
+        for lane in lanes:
+            endCar = lane.move()
+            if endCar != 0:
+                endCars.append(endCar)
+
+        return endCars
+
+
+    #move the inside of the intersection by moving the in_intersection_index of all the cars in the intersection up by 1
+
+    def moveIntersection(self):
+        for car in self.iic:
+            car.move()
+
+
+
     #move forward in time once
     #each move will be equal to some amount of real time (probably less than a second)
     #move all of the time counters in the cars forward once
@@ -99,9 +127,18 @@ class Intersection:
         self.away3.addx(self.in_intersection[10])
         self.away4.addx(self.in_intersection[9])
 
+        #move the cars in the intersection first so that the cars behind can come in
+        self.moveIntersection()
+
+        #if only lane 5 has a green light, move lane 5
+        #add what comes out of lane 5 to the intersection and set the in_intersection_index of the car to 0
         if self.phase == 3:
+            car = self.moveLane(self.phase3)
+            if car != 0:
+                car.iii = 0
+                self.iic.append(car)
+
             #this is only lane 5, which can turn into away lane 2,3,4
-            #move the cars in the intersection first so that the cars behind can come in
             #move lane 5 forward and put the end of lane 5 into the in_intersection array
             #which spot in the in_intersection array depends on which lane it will end up in
 
@@ -130,10 +167,18 @@ class Intersection:
 
 
 
+
     #printing function to see everything in the intersection for debugging
     def print(self):
+        print("Toward Lanes: ")
+
         for lane in self.toward_lanes:
             print(lane.contents)
+
+        print("Away lanes: ")
+
         for lane in self.away_lanes:
             print(lane.contents)
+
+        print("In the intersection: ")
         print(self.in_intersection)
