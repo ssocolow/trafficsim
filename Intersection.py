@@ -72,7 +72,7 @@ class Intersection:
     #add a car to the beginning of one of the toward lanes after the toward lane is moved forward and it is checked that there isn't a car in the first spot
     def addCar(self):
         x = Car()
-        if self.toward_lanes[x.origin - 1][0] == 0:
+        if self.toward_lanes[x.origin - 1].contents[0] == 0:
             self.toward_lanes[x.origin - 1].addx(x)
 
 
@@ -82,25 +82,25 @@ class Intersection:
         pass
 
 
-    #move lanes with a green light
-    #gets an array of lanes as an input
-    #moves the lanes in the array forward 1 time step
-    #returns an array of cars that have moved through the lane and are now in the intersection
-    def moveLane(self, lanes):
-        endCars = []
-        for lane in lanes:
-            endCar = lane.move()
-            if endCar != 0:
-                endCars.append(endCar)
+    #move lane with a green light
+    #gets one lane as an input
+    #moves the lane forward 1 time step
+    #returns a cars that has moved through the lane and is now in the intersection if the last element of the lane is a car
+    #otherwise it returns a 0
+    def moveLane(self, lane):
+        endCar = lane.move()
+        return endCar
 
-        return endCars
 
 
     #move the inside of the intersection by moving the in_intersection_index of all the cars in the intersection up by 1
-
+    #if it returns an away lane number, then the car is finished with the intersection
     def moveIntersection(self):
         for car in self.iic:
-            car.move()
+            x = car.move()
+            if x != None:
+                self.away_lanes[x - 1].addx(car)
+                self.iic.remove(car)
 
 
 
@@ -114,6 +114,7 @@ class Intersection:
     def move(self):
 
         #increase the wait time of all of the cars in the toward lanes
+        #need to tick cars in intersection
         self.tick_wait_time()
 
         #move all of the cars that are going away from the intersection
@@ -121,11 +122,14 @@ class Intersection:
         for lane in self.away_lanes:
             lane.move()
 
-        #put the in_intersection spots that go into the away lanes into their respective away lanes
-        self.away1.addx(self.in_intersection[2])
-        self.away2.addx(self.in_intersection[0])
-        self.away3.addx(self.in_intersection[10])
-        self.away4.addx(self.in_intersection[9])
+
+        #archived
+        # #put the in_intersection spots that go into the away lanes into their respective away lanes
+        # self.away1.addx(self.in_intersection[2])
+        # self.away2.addx(self.in_intersection[0])
+        # self.away3.addx(self.in_intersection[10])
+        # self.away4.addx(self.in_intersection[9])
+
 
         #move the cars in the intersection first so that the cars behind can come in
         self.moveIntersection()
@@ -133,29 +137,44 @@ class Intersection:
         #if only lane 5 has a green light, move lane 5
         #add what comes out of lane 5 to the intersection and set the in_intersection_index of the car to 0
         if self.phase == 3:
-            car = self.moveLane(self.phase3)
+            car = self.moveLane(self.phase3[0])
             if car != 0:
                 car.iii = 0
                 self.iic.append(car)
 
+            #archived
             #this is only lane 5, which can turn into away lane 2,3,4
             #move lane 5 forward and put the end of lane 5 into the in_intersection array
             #which spot in the in_intersection array depends on which lane it will end up in
 
-            car = self.phase3[0].contents[self.phase3[0].len - 1]
-            self.in_intersection[self.which_away_lane] = self.phase3[0].move()
+            # car = self.phase3[0].contents[self.phase3[0].len - 1]
+            # self.in_intersection[self.which_away_lane] = self.phase3[0].move()
 
         if self.phase == 2:
-            #this is lanes 2,3,4 where lane 3 has to turn into away lane 3, lane 2 has to go into away lane 4 lane 4 can go to away lane 1 or 2
-            self.in_intersection[3] = self.phase2[0].move()
-            self.in_intersection[2] = self.phase2[1].move()
-            self.in_intersection[self.which_away_lane] = self.phase2[2].move()
+            #this is lanes 2,3,4
+            for i in range(3):
+                car = self.moveLane(self.phase2[i])
+                if car != 0:
+                    car.iii = 0
+                    self.iic.append(car)
+
+            #archived
+            # self.in_intersection[3] = self.phase2[0].move()
+            # self.in_intersection[2] = self.phase2[1].move()
+            # self.in_intersection[self.which_away_lane] = self.phase2[2].move()
 
         if self.phase == 1:
-            #contains lanes 1,2,7 where lane 1 can go into away lane 1 or 2 and lane 2 has to go into away lane 4 and lane 7 has to go to away lane 3
-            self.in_intersection[self.which_away_lane] = self.phase1[0].move()
-            self.in_intersection[3] = self.phase1[1].move()
-            self.in_intersection[2] = self.phase1[2].move()
+            #contains lanes 1,2,7
+            for i in range(3):
+                car = self.moveLane(self.phase3[0])
+                if car != 0:
+                    car.iii = 0
+                    self.iic.append(car)
+
+            # where lane 1 can go into away lane 1 or 2 and lane 2 has to go into away lane 4 and lane 7 has to go to away lane 3
+            # self.in_intersection[self.which_away_lane] = self.phase1[0].move()
+            # self.in_intersection[3] = self.phase1[1].move()
+            # self.in_intersection[2] = self.phase1[2].move()
 
         if self.phase == 4:
             #contains lanes 6,7 where lane 6 can go into away lane 1 or 4 and lane 7 has to go into away lane 3
@@ -164,6 +183,8 @@ class Intersection:
 
         if self.phase == 5:
             self.in_intersection[self.which_away_lane] = self.phase5[0].move()
+
+        self.moveRedLanes()
 
 
 

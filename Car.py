@@ -92,9 +92,11 @@ class Car:
         self.path_len = len(self.path) - 1
 
 
+
     #function to increase wait time
     def tick(self):
         self.wait_time += 1
+
 
     #moves the car through the intersection non conflicting/yielding
     #first set the self.iii to 0
@@ -105,4 +107,4 @@ class Car:
         else:
             #add the car to the right away lane
             #in the intersection class, if this returns a 2, then move it into the right away lane
-            return 2
+            return self.away
