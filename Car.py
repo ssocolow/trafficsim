@@ -97,6 +97,10 @@ class Car:
     def tick(self):
         self.wait_time += 1
 
+    #initialize the car for its path through the intersection by setting the iii to 0 and the self.loc to the right number
+    def startIntersectionMove(self):
+        self.iii = 0
+        self.loc = self.path[self.iii]
 
     #moves the car through the intersection non conflicting/yielding
     #first set the self.iii to 0
