@@ -110,5 +110,5 @@ class Car:
             self.loc = self.path[self.iii]
         else:
             #add the car to the right away lane
-            #in the intersection class, if this returns a 2, then move it into the right away lane
+            #in the intersection class this returns the away lane it should be moved to
             return self.away

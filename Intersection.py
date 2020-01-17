@@ -24,6 +24,10 @@ class Intersection:
         #make arrays with lanes going toward the intersection for each phase
         #these phases don't have yeilding conflicts that can arise (phase 1 through 3)
 
+        #phase0 is all red lights
+        #for the purpose of the simulation, a yellow light is the same as a red light, aka cars don't enter the intersection
+        self.phase0 = []
+
         #phase1 has lanes 1,2,7 because they don't conflict
         self.phase1 = [self.toward_lanes[0],self.toward_lanes[1],self.toward_lanes[6]]
 
@@ -38,6 +42,8 @@ class Intersection:
 
         #phase5 has lanes 3,4,6,7
         self.phase5 = [self.toward_lanes[2],self.toward_lanes[3],self.toward_lanes[5],self.toward_lanes[6]]
+
+        self.phases = [self.phase0,self.phase1,self.phase2,self.phase3,self.phase4,self.phase5]
 
         #make away lanes, 1 is opposite lane 1 and 2, 2 is opposite 3 and 4, 3 is opposite 5, 4 is opposite 6 and 7
         self.away1 = self.away_lanes[0]
@@ -78,9 +84,18 @@ class Intersection:
 
 
     #cars still move up in lanes that have a red light, but the have to stop and wait behind each other
+    #do right on red if the car can make it
     def moveRedLanes(self):
-        pass
+        #loop over all of the lanes that don't have a green light
+        for lane in self.toward_lanes:
+            if lane not in self.phases[self.phase]:
+                lane.moveRed()
 
+
+    #right on red functionality which checks if there is a car in the spot where the car in the red lane wants to be in the intersection
+    #if there is no car there, then the car can move from the red lane to that spot in the intersection
+    def rightOnRed(self):
+        pass
 
     #move lane with a green light
     #gets one lane as an input
@@ -180,7 +195,6 @@ class Intersection:
         for lane in self.away_lanes:
             lane.move()
 
-
         #archived
         # #put the in_intersection spots that go into the away lanes into their respective away lanes
         # self.away1.addx(self.in_intersection[2])
@@ -188,15 +202,16 @@ class Intersection:
         # self.away3.addx(self.in_intersection[10])
         # self.away4.addx(self.in_intersection[9])
 
-
         #move the cars in the intersection first so that the cars behind can come in
         self.moveIntersection()
 
         #move the lanes that have a green light
         self.moveGreenLanes()
 
-        #move all the cars in the lanes that have red lights forward until they stack
         #do right on red if the car can make it through the intersection without hitting anyone
+        self.rightOnRed()
+
+        #move all the cars in the lanes that have red lights forward until they stack
         self.moveRedLanes()
 
         #add primative or basic visualization of where the cars are in the intersection model by updating the in_intersection array
