@@ -12,6 +12,12 @@ LANE_LEN = 10
 toward_lane_ids = []
 away_lane_ids = []
 
+#array to store the in intersection spots
+iis = []
+
+iis.append(rect(167,167,209,250,color='white'))
+
+
 #make the arrays to hold the specific toward lane ids
 for i in range(7):
     toward_lane_ids.append([])
@@ -28,8 +34,8 @@ for i in range(LANE_LEN):
     toward_lane_ids[0].append(rect(250,(500-lbs*i),292,(500-lbs*(i+1)),color='white'))
     toward_lane_ids[1].append(rect(292,(500-lbs*i),334,(500-lbs*(i+1)),color='white'))
     #make toward lanes 3 and 4
-    toward_lane_ids[2].append(rect((500-lbs*i),250,(500-lbs*(i+1)),208,color='white'))
-    toward_lane_ids[3].append(rect((500-lbs*i),208,(500-lbs*(i+1)),166,color='white'))
+    toward_lane_ids[2].append(rect((500-lbs*i),250,(500-lbs*(i+1)),209,color='white'))
+    toward_lane_ids[3].append(rect((500-lbs*i),209,(500-lbs*(i+1)),167,color='white'))
     #make toward lane 5
     toward_lane_ids[4].append(rect(250,(lbs*i),167,(lbs*(i+1)),color='white'))
     #make toward lanes 6 and 7
