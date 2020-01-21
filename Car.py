@@ -9,6 +9,9 @@ class Car:
         #can be 1 through 12 inclusive
         self.loc = 0
 
+        #can be right, left, or forward
+        self.movement = "not decided"
+
         #these are all the paths through the intersection ordered by toward lanes then by left,forward,right
         #for example the first path is lane 1 going left
         #paths have numbers corresponding with where they are in the intersection model
@@ -40,49 +43,61 @@ class Car:
             if a <= 20:
                 self.away = 1
                 self.path_index = 1
+                self.movement = "forward"
             else:
                 self.away = 2
                 self.path_index = 0
+                self.movement = "left"
         elif p <= 38:
             self.origin = 2
             self.away = 4
             self.path_index = 2
+            self.movement = "right"
         #keep implementing path
         elif p <= 49:
             self.origin = 3
             self.away = 3
             self.path_index = 3
+            self.movement = "left"
         elif p <= 69:
             self.origin = 4
             if a <= 20:
                 self.away = 1
                 self.path_index = 5
+                self.movement = "right"
             else:
                 self.away = 2
                 self.path_index = 4
+                self.movement = "forward"
         elif p <= 72:
             self.origin = 5
             if a <= 31:
                 self.away = 2
                 self.path_index = 8
+                self.movement = "right"
             elif a <= 56:
                 self.away = 3
                 self.path_index = 7
+                self.movement = "forward"
             elif a <= 100:
                 self.away = 4
                 self.path_index = 6
+                self.movement = "left"
         elif p <= 93:
             self.origin = 6
             if a <= 16:
                 self.away = 1
                 self.path_index = 9
+                self.movement = "left"
             elif a <= 100:
                 self.away = 4
                 self.path_index = 10
+                self.movement = "forward"
         elif p <= 100:
             self.origin = 7
             self.away = 3
             self.path_index = 11
+            self.movement = "right"
 
         #make an array with the numbers that correspond with how the car moves through the intersection
         self.path = self.paths[self.path_index]
@@ -90,6 +105,9 @@ class Car:
         #store the length of the path (how many spots the car goes through when in the intersection) minus 1 so it can be checked against the index
         #the maximum value that self.iii can be is this
         self.path_len = len(self.path) - 1
+
+        #this tells the intersection if the car has waited for the right on red
+        self.has_waited = False
 
 
 

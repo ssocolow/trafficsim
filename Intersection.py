@@ -86,16 +86,65 @@ class Intersection:
     #cars still move up in lanes that have a red light, but the have to stop and wait behind each other
     #do right on red if the car can make it
     def moveRedLanes(self):
+        #first check if there is a car in the last position of the lane which means that it has waited
+        for lane in self.toward_lanes:
+            if lane not in self.phases[self.phase]:
+                if lane.contents[lane.len-1] != 0:
+                    lane.contents[lane.len-1].has_waited = True
+
         #loop over all of the lanes that don't have a green light
         for lane in self.toward_lanes:
             if lane not in self.phases[self.phase]:
                 lane.moveRed()
 
 
+
+
     #right on red functionality which checks if there is a car in the spot where the car in the red lane wants to be in the intersection
-    #if there is no car there, then the car can move from the red lane to that spot in the intersection
+    #if there is no car there, then the car can safely move from the red lane to that spot in the intersection if it wants to go right
+
+    #car has to stop before doing a right on red
+    #in order to accomplish this, the car class will have a has_waited variable that will default to false and
+    #will be changed to true after it sits in the last spot of a red lane once
     def rightOnRed(self):
-        pass
+        #loop through all of the red lanes
+        for lane in self.toward_lanes:
+            if lane not in self.phases[self.phase]:
+                if (lane.contents[lane.len - 1] != 0):
+                    if (lane.contents[lane.len - 1].movement == "right") and (lane.contents[lane.len - 1].has_waited):
+                        #if there is a car going right and has waited in the last position of the red lane
+                        car = lane.contents[lane.len - 1]
+                        if self.okForRight(car):
+                            #checks there is no car where the right on red person wants to go
+                            car.startIntersectionMove()
+                            self.iic.append(car)
+                            lane.contents[lane.len - 1] = 0
+
+
+    #checks there is no car where the right on red person wants to go
+    def okForRight(self, car):
+        self.mapInIntersectionModel()
+        if car.away == 1:
+            if self.in_intersection[2] == 0:
+                return True
+            else:
+                return False
+        if car.away == 2:
+            if self.in_intersection[0] == 0:
+                return True
+            else:
+                return False
+        if car.away == 3:
+            if self.in_intersection[11] == 0:
+                return True
+            else:
+                return False
+        if car.away == 4:
+            if self.in_intersection[10] == 0:
+                return True
+            else:
+                return False
+
 
     #move lane with a green light
     #gets one lane as an input
@@ -111,11 +160,17 @@ class Intersection:
     #move the inside of the intersection by moving the in_intersection_index of all the cars in the intersection up by 1
     #if it returns an away lane number, then the car is finished with the intersection
     def moveIntersection(self):
+        #have to make an array to store the cars that are going to be removed from self.iic because if we remove it during the for loop
+        #then the array it is looping over will shrink by 1 and mess it up
+        going_to_be_removed = []
         for car in self.iic:
             x = car.move()
             if x != None:
                 self.away_lanes[x - 1].addx(car)
-                self.iic.remove(car)
+                going_to_be_removed.append(car)
+
+        for car in going_to_be_removed:
+            self.iic.remove(car)
 
 
 
