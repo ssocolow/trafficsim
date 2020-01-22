@@ -20,7 +20,7 @@ I = Intersection(toward, away)
 for i in range(100):
     I.addCar()
 
-I.phase = 1
+I.phase = 5
 
 for i in range(20):
     time.sleep(1)

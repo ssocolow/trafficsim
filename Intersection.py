@@ -229,7 +229,45 @@ class Intersection:
         #this phase is the only yielding phase
         #lanes 3,4,6,7
         if self.phase == 5:
-            self.in_intersection[self.which_away_lane] = self.phase5[0].move()
+            #first, the lanes that don't have to worry about yielding go (4 and 7)
+            car = self.moveLane(self.phase5[1])
+            if car != 0:
+                car.startIntersectionMove()
+                self.iic.append(car)
+            car = self.moveLane(self.phase5[3])
+            if car != 0:
+                car.startIntersectionMove()
+                self.iic.append(car)
+
+            #then check if 6 has a car that wants to do a left in the last position
+            #if it doesn't, move the lane normally
+            if self.phase5[2].contents[self.phase5[2].len - 1] == 0 or self.phase5[2].contents[self.phase5[2].len - 1].movement != 'left':
+                car = self.moveLane(self.phase5[2])
+                if car != 0:
+                    car.startIntersectionMove()
+                    self.iic.append(car)
+            #if it does, check if it can take the full left safely and if it can move it, else do a move red lane
+            #it can only take the full left safely if the third last (index 7 with a 10 length lane) spot of lane 3 is clear and
+            #if the 5th last spot (index 5 with a 10 length lane) is clear
+            else:
+                if self.phase5[0].contents[self.phase5[0].len - 3] == 0 and self.phase5[1].contents[self.phase5[1].len - 5] == 0:
+                    car = self.moveLane(self.phase5[2])
+                    if car != 0:
+                        car.startIntersectionMove()
+                        self.iic.append(car)
+                else:
+                    self.phase5[2].moveRed()
+
+            #now just need to do the same with lane 3 which is the left only lane
+            #it can go if the second last element in lane 6 is 0 and if the fourth last element of lane 7 is 0
+            if self.phase5[2].contents[self.phase5[2].len - 2] == 0 and self.phase5[3].contents[self.phase5[3].len - 4] == 0:
+                car = self.moveLane(self.phase5[0])
+                if car != 0:
+                    car.startIntersectionMove()
+                    self.iic.append(car)
+            else:
+                self.phase5[0].moveRed()
+
 
 
     #move forward in time once
