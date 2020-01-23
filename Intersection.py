@@ -246,9 +246,12 @@ class Intersection:
                 if car != 0:
                     car.startIntersectionMove()
                     self.iic.append(car)
+
+
             #if it does, check if it can take the full left safely and if it can move it, else do a move red lane
             #it can only take the full left safely if the third last (index 7 with a 10 length lane) spot of lane 3 is clear and
             #if the 5th last spot (index 5 with a 10 length lane) is clear
+            #if it is waiting more than 10 steps, it will change to go forward
             else:
                 if self.phase5[0].contents[self.phase5[0].len - 3] == 0 and self.phase5[1].contents[self.phase5[1].len - 5] == 0:
                     car = self.moveLane(self.phase5[2])
@@ -256,7 +259,12 @@ class Intersection:
                         car.startIntersectionMove()
                         self.iic.append(car)
                 else:
+                    self.phase5[2].contents[self.phase5[2].len - 1].yield_waiting_bool = True
                     self.phase5[2].moveRed()
+                    #if it has been waiting too long, make it go forward
+                    if self.phase5[2].contents[self.phase5[2].len - 1].yielding_time > 10:
+                        self.phase5[2].contents[self.phase5[2].len - 1].tooLongWaiting()
+
 
             #now just need to do the same with lane 3 which is the left only lane
             #it can go if the second last element in lane 6 is 0 and if the fourth last element of lane 7 is 0

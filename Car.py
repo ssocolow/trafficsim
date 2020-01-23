@@ -109,11 +109,20 @@ class Car:
         #this tells the intersection if the car has waited for the right on red
         self.has_waited = False
 
+        self.yield_waiting_bool = False
+
+        #this is for the super unusual double yield scenario
+        if self.movement == 'left' and (self.origin == 3 or self.origin == 6):
+            self.yielding_time = 0
+
+
 
 
     #function to increase wait time
     def tick(self):
         self.wait_time += 1
+        if self.yield_waiting_bool:
+            self.yielding_time += 1
 
     #initialize the car for its path through the intersection by setting the iii to 0 and the self.loc to the right number
     def startIntersectionMove(self):
@@ -130,3 +139,11 @@ class Car:
             #add the car to the right away lane
             #in the intersection class this returns the away lane it should be moved to
             return self.away
+
+
+
+    def tooLongWaiting(self):
+        self.away = 4
+        self.path = self.paths[11]
+        self.path_len = len(self.path) - 1
+        self.movement = 'forward'
