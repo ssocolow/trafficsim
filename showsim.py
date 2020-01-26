@@ -1,5 +1,6 @@
 #import py5 functionality
 from py5 import *
+import time
 
 #make the canvas
 canvas = createCanvas(500,500)
@@ -16,6 +17,22 @@ away_lane_ids = []
 iis = []
 
 iis.append(rect(167,167,209,250,color='white'))
+iis.append(rect(209,167,250,209,color='white'))
+
+iis.append(rect(250,167,334,209,color='white'))
+iis.append(rect(209,209,250,250,color='white'))
+
+iis.append(rect(250,209,292,250,color='white'))
+iis.append(rect(292,209,334,250,color='white'))
+
+iis.append(rect(167,250,209,292,color='white'))
+iis.append(rect(209,250,250,292,color='white'))
+
+iis.append(rect(250,250,292,292,color='white'))
+iis.append(rect(292,250,334,334,color='white'))
+
+iis.append(rect(167,292,250,334,color='white'))
+iis.append(rect(250,292,292,334,color='white'))
 
 
 #make the arrays to hold the specific toward lane ids
@@ -55,4 +72,32 @@ for i in range(LANE_LEN):
     away_lane_ids[1].append(rect((lbs*i),167,(lbs*(i+1)),250,color='white'))
 
 #show the canvas
-show()
+#show()
+
+#draw the canvas
+def visualizeIntersection(to,_in,away):
+	for i in range(7):
+		for j in range(10):
+			canvas.itemconfigure(toward_lane_ids[i][j],fill='white')
+	for i in range(4):
+		for j in range(10):
+			canvas.itemconfigure(away_lane_ids[i][j],fill='white')
+	for i in range(7):
+		for i in range(10):
+			if to[i][j] != 0:
+				canvas.itemconfigure(toward_lane_ids[i][j],fill='red')
+	for i in range(4):
+		for i in range(10):
+			if away[i][j] != 0:
+				canvas.itemconfigure(away_lane_ids[i][j],fill='red')
+	for i in range(12):
+		if _in[i][j] != 0:
+			canvas.itemconfigure(iis[i][j],fill='red')
+	draw()
+				
+#for i in range(10):
+#	time.sleep(1)
+#	canvas.itemconfigure(toward_lane_ids[0][i],fill='red')
+#	if i != 0:
+#		canvas.itemconfigure(toward_lane_ids[0][i-1],fill='white')
+#	draw()
