@@ -2,7 +2,12 @@
 from Intersection import Intersection
 from Lane import Lane
 from Car import Car
+#import time functionality
 import time
+#import neural network functionality
+import nn
+#import visualization functionality
+import showsim
 
 #make the toward lanes and the away lanes
 toward = []
@@ -16,6 +21,12 @@ for i in range(4):
 #make the intersection
 I = Intersection(toward, away)
 
+#make the neural networks
+#nets = []
+#
+#for i in range(100):
+#	nets.append(nn.NeuralNetwork([71],[5],[5],[5]))
+
 #debugging
 for i in range(100):
     I.addCar()
@@ -26,6 +37,8 @@ for i in range(20):
     time.sleep(1)
     I.move()
     I.print()
+    i = I.getInfoArrays()
+    showsim.visualizeIntersection(i[0],i[1],i[2])
 
 # for car in I.iic:
 #     print(car.origin)
