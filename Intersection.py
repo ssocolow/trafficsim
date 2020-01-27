@@ -318,18 +318,18 @@ class Intersection:
         #add primative or basic visualization of where the cars are in the intersection model by updating the in_intersection array
         self.mapInIntersectionModel()
 
-	
+
     #a way to get information about the intersection for the visualizer
     #returns an array with arrays of the contents of all the lanes and the in_intersection
     def getInfoArrays(self):
-		to = []
-		for lane in self.toward_lanes:
-			to.append(lane.contents)
-		away = []
-		for lane in self.away_lanes:
-			away.append(lane.contents)
-		_in = self.in_intersection.copy()
-		return [to,_in,away]
+        to = []
+        for lane in self.toward_lanes:
+            to.append(lane.contents)
+        away = []
+        for lane in self.away_lanes:
+            away.append(lane.contents)
+        _in = self.in_intersection.copy()
+        return [to,_in,away]
 
 
     #printing function to see everything in the intersection for debugging
