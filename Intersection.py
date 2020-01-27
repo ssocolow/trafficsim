@@ -44,7 +44,7 @@ class Intersection:
         self.phase5 = [self.toward_lanes[2],self.toward_lanes[3],self.toward_lanes[5],self.toward_lanes[6]]
 
         self.phases = [self.phase0,self.phase1,self.phase2,self.phase3,self.phase4,self.phase5]
-
+        
         #make away lanes, 1 is opposite lane 1 and 2, 2 is opposite 3 and 4, 3 is opposite 5, 4 is opposite 6 and 7
         self.away1 = self.away_lanes[0]
         self.away2 = self.away_lanes[1]
@@ -62,9 +62,16 @@ class Intersection:
         #paths have numbers corresponding with where they are in the intersection
         self.paths = [[12,9,5,4,1],[12,9,5,3],[10],[6,5,4,8,11],[3,2,1],[3],[2,4,8,9,10],[2,4,8,11],[1],[7,8,9,5,3],[7,8,9,10],[11]]
 
+        #make a counter which keeps track of how many move steps the intersection has done
+        self.counter = 0
+        
+        #make a temporary counter to count until 6 to know when to switch the phase and know what phase to switch it to with self.next_phase
+        self.temp_counter = 0
+        self.next_phase = 0
 
 
 
+    #increase the wait times of all the cars and increase the Intersection move counter
     def tick_wait_time(self):
         #have all the cars increase their wait time by 1 that are in the lanes going toward the intersection
         for lane in self.toward_lanes:
@@ -72,6 +79,7 @@ class Intersection:
             #move the car counters foward
                 if lane.contents[j] != 0:
                     lane.contents[j].tick()
+        self.counter += 1
 
 
 
@@ -317,7 +325,20 @@ class Intersection:
 
         #add primative or basic visualization of where the cars are in the intersection model by updating the in_intersection array
         self.mapInIntersectionModel()
+        
+        #if this is true, the lights are all red so we are changing phases
+        if self.phase == 0:
+            if self.temp_counter >= 6:
+                self.phase = self.next_phase
+            self.temp_counter += 1
+        else:
+            self.temp_counter = 0
 
+
+    def changePhase(self,phase_number):
+        self.phase = 0
+        self.temp_counter = 0
+        self.next_phase = phase_number
 
     #a way to get information about the intersection for the visualizer
     #returns an array with arrays of the contents of all the lanes and the in_intersection

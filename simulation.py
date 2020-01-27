@@ -5,9 +5,10 @@ from Car import Car
 #import time functionality
 import time
 #import neural network functionality
-import nn
+#import nn
 #import visualization functionality
 import showsim
+import led_test
 
 #make the toward lanes and the away lanes
 toward = []
@@ -28,17 +29,24 @@ I = Intersection(toward, away)
 #	nets.append(nn.NeuralNetwork([71],[5],[5],[5]))
 
 #debugging
+#for i in range(100):
+#    I.addCar()
+
+I.phase = 0
+phase_count = 0
 for i in range(100):
-    I.addCar()
-
-I.phase = 5
-
-for i in range(20):
+    if i % 20 == 0:
+        phase_count += 1
+        I.changePhase(phase_count)
     time.sleep(1)
     I.move()
-    I.print()
+    I.addCar()
+    #I.print()
+    print(I.phase)
     i = I.getInfoArrays()
     showsim.visualizeIntersection(i[0],i[1],i[2])
+    led_test.turnAllOff()
+    led_test.phaseState(I.phase)
 
 # for car in I.iic:
 #     print(car.origin)

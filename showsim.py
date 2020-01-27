@@ -71,29 +71,53 @@ for i in range(LANE_LEN):
     #make away lane 2
     away_lane_ids[1].append(rect((lbs*i),167,(lbs*(i+1)),250,color='white'))
 
+for lane in away_lane_ids:
+    lane.reverse()
+
 #show the canvas
 #show()
 
+def getColor(car):
+    if car.origin == 1:
+        return 'blue'
+    if car.origin == 2:
+        return 'red'
+    if car.origin == 3:
+        return 'green'
+    if car.origin == 4:
+        return 'yellow'
+    if car.origin == 5:
+        return 'orange'
+    if car.origin == 6:
+        return 'purple'
+    if car.origin == 7:
+        return 'black'
+
 #draw the canvas
 def visualizeIntersection(to,_in,away):
-	for i in range(7):
-		for j in range(10):
-			canvas.itemconfigure(toward_lane_ids[i][j],fill='white')
-	for i in range(4):
-		for j in range(10):
-			canvas.itemconfigure(away_lane_ids[i][j],fill='white')
-	for i in range(7):
-		for i in range(10):
-			if to[i][j] != 0:
-				canvas.itemconfigure(toward_lane_ids[i][j],fill='red')
-	for i in range(4):
-		for i in range(10):
-			if away[i][j] != 0:
-				canvas.itemconfigure(away_lane_ids[i][j],fill='red')
-	for i in range(12):
-		if _in[i][j] != 0:
-			canvas.itemconfigure(iis[i][j],fill='red')
-	draw()
+    #clear the visualization
+    for i in range(7):
+        for j in range(10):
+            canvas.itemconfigure(toward_lane_ids[i][j],fill='white')
+    for i in range(4):
+        for j in range(10):
+            canvas.itemconfigure(away_lane_ids[i][j],fill='white')
+    for i in range(12):
+        canvas.itemconfigure(iis[i],fill='white')
+    
+    #draw the color for the car
+    for i in range(7):
+        for j in range(10):
+            if to[i][j] != 0:
+                canvas.itemconfigure(toward_lane_ids[i][j],fill=getColor(to[i][j]))
+    for i in range(4):
+        for j in range(10):
+            if away[i][j] != 0:
+                canvas.itemconfigure(away_lane_ids[i][j],fill=getColor(away[i][j]))
+    for i in range(12):
+        if _in[i] != 0:
+            canvas.itemconfigure(iis[i],fill=getColor(_in[i]))
+    draw()
 				
 #for i in range(10):
 #	time.sleep(1)
