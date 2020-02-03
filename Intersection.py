@@ -44,18 +44,12 @@ class Intersection:
         self.phase5 = [self.toward_lanes[2],self.toward_lanes[3],self.toward_lanes[5],self.toward_lanes[6]]
 
         self.phases = [self.phase0,self.phase1,self.phase2,self.phase3,self.phase4,self.phase5]
-        
+
         #make away lanes, 1 is opposite lane 1 and 2, 2 is opposite 3 and 4, 3 is opposite 5, 4 is opposite 6 and 7
         self.away1 = self.away_lanes[0]
         self.away2 = self.away_lanes[1]
         self.away3 = self.away_lanes[2]
         self.away4 = self.away_lanes[3]
-
-        #this approach of using the intersection to decide where the cars will go is now not in use
-        #now the cars know where they will go
-        # #this will decide which away lane the car will go into (away lane 1,2,3,4)
-        # #have to rethink this because now cars know where to go
-        # self.which_away_lane = 0
 
         #these are the paths from the lane to the intersection ordered by toward lanes then by left,forward,right
         #for example the first path is lane 1 going left
@@ -64,21 +58,24 @@ class Intersection:
 
         #make a counter which keeps track of how many move steps the intersection has done
         self.counter = 0
-        
+
         #make a temporary counter to count until 6 to know when to switch the phase and know what phase to switch it to with self.next_phase
         self.temp_counter = 0
         self.next_phase = 0
 
+        #make a total wait time counter that will act as a fitness function where we want to minimize it
+        self.total_wait_time = 0
 
 
-    #increase the wait times of all the cars and increase the Intersection move counter
+
+    #increase the wait times of all the lanes and increase the total wait time by 1 for each car in the toward lanes and increase the Intersection move counter
     def tick_wait_time(self):
         #have all the cars increase their wait time by 1 that are in the lanes going toward the intersection
         for lane in self.toward_lanes:
-            for j in range(lane.len):
-            #move the car counters foward
-                if lane.contents[j] != 0:
-                    lane.contents[j].tick()
+            for j in lane.contents:
+                if j != 0:
+                    self.total_wait_time += 1
+            lane.tick()
         self.counter += 1
 
 
@@ -325,7 +322,7 @@ class Intersection:
 
         #add primative or basic visualization of where the cars are in the intersection model by updating the in_intersection array
         self.mapInIntersectionModel()
-        
+
         #if this is true, the lights are all red so we are changing phases
         if self.phase == 0:
             if self.temp_counter >= 6:
@@ -340,6 +337,7 @@ class Intersection:
         self.temp_counter = 0
         self.next_phase = phase_number
 
+
     #a way to get information about the intersection for the visualizer
     #returns an array with arrays of the contents of all the lanes and the in_intersection
     def getInfoArrays(self):
@@ -351,6 +349,45 @@ class Intersection:
             away.append(lane.contents)
         _in = self.in_intersection.copy()
         return [to,_in,away]
+
+
+    #adding functionality to get an array of wait times from each lane
+    def getLaneWaitTimes(self):
+        output = []
+        for lane in self.toward_lanes:
+            output.append(lane.wait_time)
+        return output
+
+
+    #functionality to get one large array that has a 1 or 0 for if there is a car or not in the toward lanes
+    def get10InfoArrays(self):
+        output = []
+        for lane in self.toward_lanes:
+            for spot in lane.contents:
+                if spot != 0:
+                    output.append(1)
+                else:
+                    output.append(0)
+        return output
+
+
+    #functionality to clear the intersection and restore defaults
+    def clearIntersection(self):
+        for lane in self.toward_lanes:
+            for spot in lane.contents:
+                spot = 0
+        for lane in self.away_lanes:
+            for spot in lane.contents:
+                spot = 0
+        #defualt phase is phase 1 at the beginning
+        self.phase = 1
+        self.iic = []
+        self.in_intersection = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+        self.counter = 0
+        self.temp_counter = 0
+        self.next_phase = 0
+        self.total_wait_time = 0
 
 
     #printing function to see everything in the intersection for debugging
