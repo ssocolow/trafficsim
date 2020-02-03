@@ -15,6 +15,7 @@ import random
 #import showsim
 #import led_test
 
+
 #make the toward lanes and the away lanes
 toward = []
 for i in range(7):
@@ -33,6 +34,7 @@ I = Intersection(toward, away)
 # for i in range(100):
 #     nets.append(nn.NeuralNetwork([[78],[16],[16],[5]]))
 
+#MAKE THE 0s 0.01 instead of 0 to avoid the overflow error maybe
 
 #this will run the network through the simulation and return the total wait time generated
 #to get the inputs to the neural network, we need arrays for each lane with a 1 or 0 for if a car is there or not
@@ -70,21 +72,34 @@ def RunSimulationTest(network):
 #for i in range(100):
 #    I.addCar()
 
-# I.phase = 0
-# phase_count = 0
-# for i in range(100):
-#     if i % 20 == 0:
-#         phase_count += 1
-#         I.changePhase(phase_count)
-#     time.sleep(1)
-#     I.move()
-#     I.addCar()
-#     I.print()
-#     print(I.phase)
-#     i = I.getInfoArrays()
-#     #showsim.visualizeIntersection(i[0],i[1],i[2])
-#     #led_test.turnAllOff()
-#     #led_test.phaseState(I.phase)
+I.phase = 1
+time_count = 0
+phase_count = 1
+saved_wait = []
+saved_through = []
+for j in range(100):
+    for i in range(200):
+        time_count += 1
+        if i == 0:
+            I.changePhase(1)
+        if time_count % 20 == 0:
+            if phase_count != 5:
+                phase_count += 1
+                I.changePhase(phase_count)
+            else:
+                phase_count = 1
+                I.changePhase(phase_count)
+        #time.sleep(1)
+        I.move()
+        if i % 2 == 0:
+            I.addCar()
+        #print(I.phase)
+    saved_wait.append(I.total_wait_time)
+    saved_through.append(I.throughput)
+    I.clearIntersection()
+    #showsim.visualizeIntersection(i[0],i[1],i[2])
+    #led_test.turnAllOff()
+    #led_test.phaseState(I.phase)
 
 # for car in I.iic:
 #     print(car.origin)
@@ -160,3 +175,7 @@ def epoch():
         nets[num_of_gens + 1].append(nets[num_of_gens][random.choice(indicies_array)].copy().mutate())
 
     num_of_gens += 1
+    return scores
+
+
+#scores = epoch()

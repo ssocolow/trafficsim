@@ -66,6 +66,9 @@ class Intersection:
         #make a total wait time counter that will act as a fitness function where we want to minimize it
         self.total_wait_time = 0
 
+        #make a throughput variable
+        self.throughput = 0
+
 
 
     #increase the wait times of all the lanes and increase the total wait time by 1 for each car in the toward lanes and increase the Intersection move counter
@@ -154,7 +157,7 @@ class Intersection:
     #move lane with a green light
     #gets one lane as an input
     #moves the lane forward 1 time step
-    #returns a cars that has moved through the lane and is now in the intersection if the last element of the lane is a car
+    #returns a car that has moved through the lane and is now in the intersection if the last element of the lane is a car
     #otherwise it returns a 0
     def moveLane(self, lane):
         endCar = lane.move()
@@ -299,6 +302,8 @@ class Intersection:
         #move all of the cars that are going away from the intersection
         #then move the cars that are in the intersection into the right away lanes
         for lane in self.away_lanes:
+            if lane.contents[lane.len - 1] != 0:
+                self.throughput += 1
             lane.move()
 
         #archived
@@ -388,6 +393,7 @@ class Intersection:
         self.temp_counter = 0
         self.next_phase = 0
         self.total_wait_time = 0
+        self.throughput = 0
 
 
     #printing function to see everything in the intersection for debugging
