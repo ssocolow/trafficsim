@@ -18,6 +18,8 @@ import csv
 #import showsim
 #import led_test
 
+#keep track of time
+ts = time.time()
 
 #make the toward lanes and the away lanes
 toward = []
@@ -265,3 +267,5 @@ index_ = best_waits.index(min(best_waits))
 with open('bestnet010.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow([saved_best_nets[index_]])
+
+print(time.time() - ts)
