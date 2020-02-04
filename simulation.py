@@ -28,41 +28,84 @@ for i in range(4):
 #make the intersection
 I = Intersection(toward, away)
 
+#store the networks througputs and wait times
+throughs = []
+waits = []
+scores = []
+
 #the nets array is now controlled by the epoch function
 # #make the neural networks
 # nets = []
 # for i in range(100):
 #     nets.append(nn.NeuralNetwork([[78],[16],[16],[5]]))
 
+
 #MAKE THE 0s 0.01 instead of 0 to avoid the overflow error maybe
+
 
 #this will run the network through the simulation and return the total wait time generated
 #to get the inputs to the neural network, we need arrays for each lane with a 1 or 0 for if a car is there or not
 #we also need to get the wait time for each lane and divide it by 10 to make it closer to between 0 and 1
 #and we need to see if the light is red or not, and if it is put a 1, if not put a 0
+
+#could also add either one input or five inputs to tell the network the current state of the light, I think I should
+#and make an output for stay the same phase
+
+#i found it, the overflow is caused by not normalizing the lane wait times, to normalize them, I think I should find a probabilitiy for each one based on total sum
 def RunSimulationTest(network):
+    #clear the intersection
     I.clearIntersection()
     for i in range(200):
         #time.sleep(1)
+        #move the intersection
         I.move()
+        #every 2 time steps add a car
         if i % 2 == 0:
             I.addCar()
 
+        #get an 70 length array with 1s for cars and 0s for empty spots for all of the toward lanes
         input_arr = I.get10InfoArrays()
-        input_arr.extend(I.getLaneWaitTimes())
-        if I.phase != 0:
-            input_arr.append(0)
-        else:
-            input_arr.append(1)
 
+        #get the wait times and then normalize them
+        lane_wait_times = I.getLaneWaitTimes()
+        #make it not 0 to avoid the dividing by 0 error
+        sum_ = 0.1
+        for num in lane_wait_times:
+            sum_ += num
+        normalized_wait_times = []
+        for num in lane_wait_times:
+            normalized_wait_times.append(num/sum_)
+
+        #add the normalized wait times to the input array
+        input_arr.extend(normalized_wait_times)
+
+        #if all the lights are red which means the phases are switching input a 1, else input a 0
+        if I.phase == 0:
+            input_arr.append(1)
+        else:
+            input_arr.append(0)
+
+        #input the current phase normalized between 1 and 0
+        input_arr.append(I.phase / 10)
+
+        #feed the inputs through the network and get an output
         output_arr = network.feedforward(input_arr)
+        #newlight is the index of the greatest output
+        #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
         newlight = output_arr.index(max(output_arr))
 
-        if newlight == I.phase:
+        #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
+        #otherwise, change the phase to the selected phase
+        if newlight == I.phase or newlight == 5:
             pass
         else:
             I.changePhase(newlight)
-    return I.total_wait_time
+    #store the throughput and wait time for each neural net
+    throughs.append(I.throughput)
+    waits.append(I.total_wait_time)
+    #return the total intersection wait time for a score
+    #normalize it somewhat to divide by 10
+    return I.total_wait_time / 10
 
 
 
@@ -72,31 +115,31 @@ def RunSimulationTest(network):
 #for i in range(100):
 #    I.addCar()
 
-I.phase = 1
-time_count = 0
-phase_count = 1
-saved_wait = []
-saved_through = []
-for j in range(100):
-    for i in range(200):
-        time_count += 1
-        if i == 0:
-            I.changePhase(1)
-        if time_count % 20 == 0:
-            if phase_count != 5:
-                phase_count += 1
-                I.changePhase(phase_count)
-            else:
-                phase_count = 1
-                I.changePhase(phase_count)
-        #time.sleep(1)
-        I.move()
-        if i % 2 == 0:
-            I.addCar()
-        #print(I.phase)
-    saved_wait.append(I.total_wait_time)
-    saved_through.append(I.throughput)
-    I.clearIntersection()
+# I.phase = 1
+# time_count = 0
+# phase_count = 1
+# saved_wait = []
+# saved_through = []
+# for j in range(100):
+#     for i in range(200):
+#         time_count += 1
+#         if i == 0:
+#             I.changePhase(1)
+#         if time_count % 20 == 0:
+#             if phase_count != 5:
+#                 phase_count += 1
+#                 I.changePhase(phase_count)
+#             else:
+#                 phase_count = 1
+#                 I.changePhase(phase_count)
+#         #time.sleep(1)
+#         I.move()
+#         if i % 2 == 0:
+#             I.addCar()
+#         #print(I.phase)
+#     saved_wait.append(I.total_wait_time)
+#     saved_through.append(I.throughput)
+#     I.clearIntersection()
     #showsim.visualizeIntersection(i[0],i[1],i[2])
     #led_test.turnAllOff()
     #led_test.phaseState(I.phase)
@@ -125,7 +168,7 @@ for j in range(100):
 
 
 #have global storing variables
-POPSIZE = 200
+POPSIZE = 100
 nets = []
 num_of_gens = 0
 
@@ -152,7 +195,7 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[78],[16],[16],[5]], mutation_rate = 0.15))
+            nets[0].append(nn.NeuralNetwork([[79],[16],[16],[6]], mutation_rate = 0.05))
 
     for i in range(POPSIZE):
         #get the score of each network by finding absolute value of the difference between the network's output and the target
@@ -177,5 +220,9 @@ def epoch():
     num_of_gens += 1
     return scores
 
-
-#scores = epoch()
+for i in range(10):
+    scores.append(epoch())
+    print(throughs)
+    print(waits)
+    throughs = []
+    waits = []

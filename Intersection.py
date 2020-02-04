@@ -381,6 +381,7 @@ class Intersection:
         for lane in self.toward_lanes:
             for spot in lane.contents:
                 spot = 0
+            lane.wait_time = 0
         for lane in self.away_lanes:
             for spot in lane.contents:
                 spot = 0
