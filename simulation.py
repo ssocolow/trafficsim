@@ -220,9 +220,16 @@ def epoch():
     num_of_gens += 1
     return scores
 
-for i in range(10):
+def avg(arr):
+    total = 0
+    for num in arr:
+        total += num
+    return total / len(arr)
+
+
+for i in range(100):
     scores.append(epoch())
-    print(throughs)
-    print(waits)
+    print(avg(throughs))
+    print(avg(waits))
     throughs = []
     waits = []
