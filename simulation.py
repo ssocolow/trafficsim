@@ -11,6 +11,9 @@ sys.path.insert(1,'/home/ubuntu/environment/Neural-Network-Python-Lib')
 import nn
 #import random selection for neuroevolution
 import random
+#get csv functionality to store the data
+#store 1 row per generation with columns of avg wait, avg throughput, best wait, best throughput
+import csv
 #import visualization functionality
 #import showsim
 #import led_test
@@ -31,7 +34,15 @@ I = Intersection(toward, away)
 #store the networks througputs and wait times
 throughs = []
 waits = []
-scores = []
+
+avg_throughs = []
+avg_waits = []
+
+best_throughs = []
+best_waits = []
+
+saved_best_nets = []
+#scores = []
 
 #the nets array is now controlled by the epoch function
 # #make the neural networks
@@ -195,7 +206,7 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[79],[16],[16],[6]], mutation_rate = 0.05))
+            nets[0].append(nn.NeuralNetwork([[79],[16],[16],[16],[6]], mutation_rate = 0.1))
 
     for i in range(POPSIZE):
         #get the score of each network by finding absolute value of the difference between the network's output and the target
@@ -220,6 +231,7 @@ def epoch():
     num_of_gens += 1
     return scores
 
+
 def avg(arr):
     total = 0
     for num in arr:
@@ -227,9 +239,18 @@ def avg(arr):
     return total / len(arr)
 
 
-for i in range(100):
-    scores.append(epoch())
-    print(avg(throughs))
-    print(avg(waits))
-    throughs = []
+for i in range(2):
+    epoch()
+    #scores.append(epoch())
+    best_throughs.append(max(throughs))
+    best_waits.append(min(waits))
+
+    best_net_i = waits.index(best_waits[i])
+    saved_best_nets.append(nets[i][best_net_i].get_data())
+
+
+    avg_throughs.append(avg(throughs))
+    avg_waits.append(avg(waits))
+
     waits = []
+    throughs =[]
