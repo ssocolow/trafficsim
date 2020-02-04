@@ -248,9 +248,20 @@ for i in range(2):
     best_net_i = waits.index(best_waits[i])
     saved_best_nets.append(nets[i][best_net_i].get_data())
 
-
     avg_throughs.append(avg(throughs))
     avg_waits.append(avg(waits))
 
     waits = []
-    throughs =[]
+    throughs = []
+
+#write data to csv
+with open('data010.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    for i in range(len(avg_waits)):
+        writer.writerow([i,avg_waits[i],avg_throughs[i],best_waits[i],best_throughs[i]])
+
+#find the best of the best
+index_ = best_waits.index(min(best_waits))
+with open('bestnet010.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow([saved_best_nets[index_]])
