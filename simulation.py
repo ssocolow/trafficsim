@@ -71,6 +71,56 @@ saved_best_nets = []
 #7 inputs for the 7 toward lanes
 #
 
+
+def neuralNetDecide(net):
+    input_arr = []
+    #get the wait times and then normalize them
+    #lane_wait_times = I.getLaneWaitTimes()
+    #print(lane_wait_times)
+    #make it not 0 to avoid the dividing by 0 error
+    # sum_ = 0.1
+    # for num in lane_wait_times:
+    #     sum_ += num
+    # normalized_wait_times = []
+    # for num in lane_wait_times:
+    #     normalized_wait_times.append(math.log(num+1)/8)
+
+    input_arr.extend(I.getCarCount())
+
+    #add the normalized wait times to the input array
+    #input_arr.extend(normalized_wait_times)
+
+    #if all the lights are red which means the phases are switching input a 1, else input a 0
+    if I.phase == 0:
+        input_arr.append(1)
+    else:
+        input_arr.append(0)
+
+    #print(I.phase)
+    #input the current phase normalized between 1 and 0
+    input_arr.append(I.phase / 10)
+
+    input_arr.append(I.time_on_phase / 200)
+
+    #print(input_arr)
+    #feed the inputs through the network and get an output
+    output_arr = net.feedforward(input_arr)
+    #newlight is the index of the greatest output
+    #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
+    newlight = output_arr.index(max(output_arr))
+   # print(output_arr)
+    #print(newlight)
+    #print(I.phase)
+    #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
+    #otherwise, change the phase to the selected phase
+    return output_arr
+    # if (newlight+1) == I.phase:
+    #     pass
+    # else:
+    #     I.changePhase(newlight + 1)
+
+
+
 #network will only choose a phase to switch to
 def RunSimulationTest(network):
     #clear the intersection
@@ -86,51 +136,26 @@ def RunSimulationTest(network):
 
         # #get an 70 length array with 1s for cars and 0s for empty spots for all of the toward lanes
         # input_arr = I.get10InfoArrays()
-        if i % 10 == 0:
-            input_arr = []
-            #get the wait times and then normalize them
-            #lane_wait_times = I.getLaneWaitTimes()
-            #print(lane_wait_times)
-            #make it not 0 to avoid the dividing by 0 error
-            # sum_ = 0.1
-            # for num in lane_wait_times:
-            #     sum_ += num
-            # normalized_wait_times = []
-            # for num in lane_wait_times:
-            #     normalized_wait_times.append(math.log(num+1)/8)
 
-            input_arr.extend(I.getCarCount())
-
-            #add the normalized wait times to the input array
-            #input_arr.extend(normalized_wait_times)
-
-            #if all the lights are red which means the phases are switching input a 1, else input a 0
-            if I.phase == 0:
-                input_arr.append(1)
+        #this is where the neural net decides
+        if I.time_on_phase >= 15:
+            if I.time_on_phase < 60:
+                output_array = neuralNetDecide(network)
+                newlight = output_array.index(max(output_array)) + 1
+                if newlight == I.phase:
+                    pass
+                else:
+                    I.changePhase(newlight)
             else:
-                input_arr.append(0)
+                output_array = neuralNetDecide(network)
+                output_array.remove(max(output_array))
+                newlight = output_array.index(max(output_array)) + 1
+                I.changePhase(newlight)
+      #  print(I.time_on_phase)
+        #print(I.phase)
 
-            #print(I.phase)
-            #input the current phase normalized between 1 and 0
-            input_arr.append(I.phase / 10)
 
-            input_arr.append(I.time_on_phase / 200)
 
-            #print(input_arr)
-            #feed the inputs through the network and get an output
-            output_arr = network.feedforward(input_arr)
-            #newlight is the index of the greatest output
-            #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
-            newlight = output_arr.index(max(output_arr))
-            #print(output_arr)
-            #print(newlight)
-            #print(I.phase)
-            #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
-            #otherwise, change the phase to the selected phase
-            if (newlight+1) == I.phase:
-                pass
-            else:
-                I.changePhase(newlight + 1)
     #store the throughput and wait time for each neural net
     throughs.append(I.throughput)
     n = 0
@@ -302,7 +327,7 @@ def avg(arr):
     return total / len(arr)
 
 
-for i in range(20):
+for i in range(3):
     epoch()
     #scores.append(epoch())
     best_throughs.append(max(throughs))

@@ -84,8 +84,8 @@ class Intersection:
                     self.total_wait_time += 1
                     j.tick()
             lane.tick()
-
-        self.time_on_phase += 1
+        if self.phase != 0:
+            self.time_on_phase += 1
         self.counter += 1
 
 
