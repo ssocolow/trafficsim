@@ -71,6 +71,8 @@ class Intersection:
         #make a throughput variable
         self.throughput = 0
 
+        self.time_on_phase = 0
+
 
 
     #increase the wait times of all the lanes and increase the total wait time by 1 for each car in the toward lanes and increase the Intersection move counter
@@ -83,6 +85,7 @@ class Intersection:
                     j.tick()
             lane.tick()
 
+        self.time_on_phase += 1
         self.counter += 1
 
 
@@ -348,6 +351,7 @@ class Intersection:
             self.phase = 0
             self.temp_counter = 0
             self.next_phase = phase_number
+            self.time_on_phase = 0
 
 
     #a way to get information about the intersection for the visualizer
@@ -401,6 +405,17 @@ class Intersection:
         self.next_phase = 0
         self.total_wait_time = 0
         self.throughput = 0
+
+
+    def getCarCount(self):
+        c = []
+        for lane in self.toward_lanes:
+            counter = 0
+            for spot in lane.contents:
+                if spot != 0:
+                    counter += 1
+            c.append(counter/10)
+        return c
 
 
     #printing function to see everything in the intersection for debugging

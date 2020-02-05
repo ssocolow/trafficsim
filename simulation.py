@@ -87,20 +87,20 @@ def RunSimulationTest(network):
 
         input_arr = []
         #get the wait times and then normalize them
-        lane_wait_times = I.getLaneWaitTimes()
+        #lane_wait_times = I.getLaneWaitTimes()
         #print(lane_wait_times)
         #make it not 0 to avoid the dividing by 0 error
-        sum_ = 0.1
-        for num in lane_wait_times:
-            sum_ += num
-        normalized_wait_times = []
-        for num in lane_wait_times:
-            normalized_wait_times.append(math.log(num+1)/8)
+        # sum_ = 0.1
+        # for num in lane_wait_times:
+        #     sum_ += num
+        # normalized_wait_times = []
+        # for num in lane_wait_times:
+        #     normalized_wait_times.append(math.log(num+1)/8)
 
-
+        input_arr.extend(I.getCarCount())
 
         #add the normalized wait times to the input array
-        input_arr.extend(normalized_wait_times)
+        #input_arr.extend(normalized_wait_times)
 
         #if all the lights are red which means the phases are switching input a 1, else input a 0
         if I.phase == 0:
@@ -108,16 +108,19 @@ def RunSimulationTest(network):
         else:
             input_arr.append(0)
 
+        #print(I.phase)
         #input the current phase normalized between 1 and 0
         input_arr.append(I.phase / 10)
 
-       # print(input_arr)
+        input_arr.append(I.time_on_phase / 200)
+
+        #print(input_arr)
         #feed the inputs through the network and get an output
         output_arr = network.feedforward(input_arr)
         #newlight is the index of the greatest output
         #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
         newlight = output_arr.index(max(output_arr))
-       # print(output_arr)
+        #print(output_arr)
         #print(newlight)
         #print(I.phase)
         #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
@@ -128,14 +131,16 @@ def RunSimulationTest(network):
             I.changePhase(newlight + 1)
     #store the throughput and wait time for each neural net
     throughs.append(I.throughput)
-    waits.append(I.total_wait_time)
-    #return the total intersection wait time for a score
-    #normalize it somewhat to divide by 10
     n = 0
     for lane in I.toward_lanes:
         n += lane.wait_time
     #print(n)
-    return n
+
+    waits.append(I.total_wait_time)
+    #return the total intersection wait time for a score
+    #normalize it somewhat to divide by 10
+
+    return I.throughput * I.throughput
 
 
 
@@ -225,23 +230,44 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[9],[16],[16],[6]], mutation_rate = 0.1))
+            nets[0].append(nn.NeuralNetwork([[10],[16],[16],[6]], mutation_rate = 0.02))
 
     for i in range(POPSIZE):
         #get the score of each network by finding absolute value of the difference between the network's output and the target
         #this will give us a smaller number for a better score, so to have a higher number for a higher score, we can do 1 divided by the score so lower score becomes higher score
-        scores.append(1 / RunSimulationTest(nets[num_of_gens][i]))
+        scores.append(RunSimulationTest(nets[num_of_gens][i]))
         total += scores[i]
+    #print(scores)
 
     for i in range(POPSIZE):
         #get an array of probablilites for each neural net
         probabilities.append(scores[i] / total)
 
+    print(probabilities)
 
-    for i in range(POPSIZE):
-        for j in range(round(probabilities[i] * 40)):
+    temp_probs = probabilities.copy()
+    #maybe the best should get 30 spots
+    #second best get 15
+    #third best get 10
+    for i in range(30):
+        indicies_array.append(temp_probs.index(max(temp_probs)))
+
+    temp_probs.remove(max(temp_probs))
+
+    for i in range(15):
+        indicies_array.append(temp_probs.index(max(temp_probs)))
+
+    temp_probs.remove(max(temp_probs))
+
+    for i in range(10):
+        indicies_array.append(temp_probs.index(max(temp_probs)))
+
+    temp_probs.remove(max(temp_probs))
+
+    for i in range(POPSIZE-55):
+        for j in range(round(probabilities[i] * 50)):
             indicies_array.append(i)
-    print(indicies_array)
+    #print(indicies_array)
 
     #add another array to store the next generation
     nets.append([])
@@ -261,7 +287,7 @@ def avg(arr):
     return total / len(arr)
 
 
-for i in range(10):
+for i in range(20):
     epoch()
     #scores.append(epoch())
     best_throughs.append(max(throughs))
