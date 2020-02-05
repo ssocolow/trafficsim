@@ -17,6 +17,7 @@ import csv
 #import visualization functionality
 #import showsim
 #import led_test
+import math
 
 #keep track of time
 ts = time.time()
@@ -72,6 +73,7 @@ saved_best_nets = []
 def RunSimulationTest(network):
     #clear the intersection
     I.clearIntersection()
+    #print(I.getLaneWaitTimes())
     for i in range(200):
         #time.sleep(1)
         #move the intersection
@@ -84,17 +86,18 @@ def RunSimulationTest(network):
         # input_arr = I.get10InfoArrays()
 
         input_arr = []
-
         #get the wait times and then normalize them
         lane_wait_times = I.getLaneWaitTimes()
-
+        #print(lane_wait_times)
         #make it not 0 to avoid the dividing by 0 error
         sum_ = 0.1
         for num in lane_wait_times:
             sum_ += num
         normalized_wait_times = []
         for num in lane_wait_times:
-            normalized_wait_times.append(num/sum_)
+            normalized_wait_times.append(math.log(num+1)/8)
+
+
 
         #add the normalized wait times to the input array
         input_arr.extend(normalized_wait_times)
@@ -114,7 +117,7 @@ def RunSimulationTest(network):
         #newlight is the index of the greatest output
         #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
         newlight = output_arr.index(max(output_arr))
-        #print(output_arr)
+       # print(output_arr)
         #print(newlight)
         #print(I.phase)
         #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
@@ -128,7 +131,11 @@ def RunSimulationTest(network):
     waits.append(I.total_wait_time)
     #return the total intersection wait time for a score
     #normalize it somewhat to divide by 10
-    return I.total_wait_time / 10
+    n = 0
+    for lane in I.toward_lanes:
+        n += lane.wait_time
+    #print(n)
+    return n
 
 
 
@@ -218,7 +225,7 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[9],[16],[16],[16],[6]], mutation_rate = 0.1))
+            nets[0].append(nn.NeuralNetwork([[9],[16],[16],[6]], mutation_rate = 0.1))
 
     for i in range(POPSIZE):
         #get the score of each network by finding absolute value of the difference between the network's output and the target
@@ -232,9 +239,9 @@ def epoch():
 
 
     for i in range(POPSIZE):
-        for j in range(round(probabilities[i] * 50)):
+        for j in range(round(probabilities[i] * 40)):
             indicies_array.append(i)
-    #print(indicies_array)
+    print(indicies_array)
 
     #add another array to store the next generation
     nets.append([])

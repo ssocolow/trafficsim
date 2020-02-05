@@ -386,12 +386,11 @@ class Intersection:
     #functionality to clear the intersection and restore defaults
     def clearIntersection(self):
         for lane in self.toward_lanes:
-            for spot in lane.contents:
-                spot = 0
+            lane.contents = [0,0,0,0,0,0,0,0,0,0]
             lane.wait_time = 0
         for lane in self.away_lanes:
-            for spot in lane.contents:
-                spot = 0
+            lane.contents = [0,0,0,0,0,0,0,0,0,0]
+
         #defualt phase is phase 1 at the beginning
         self.phase = 1
         self.iic = []
