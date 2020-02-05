@@ -29,11 +29,12 @@ class Lane:
     def addx(self, x):
         self.contents[0] = x
 
-    #increase the lane's total wait time by one for each car in it
+    #lane's total wait time is equal to the sum of the wait time of all the cars in it
     def tick(self):
+        self.wait_time = 0
         for spot in self.contents:
             if spot != 0:
-                self.wait_time += 1
+                self.wait_time += spot.wait_time
 
 
     #function to move the lane up if there is a red light

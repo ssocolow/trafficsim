@@ -66,6 +66,8 @@ class Intersection:
         #make a total wait time counter that will act as a fitness function where we want to minimize it
         self.total_wait_time = 0
 
+        self.hasRequiredChange = False
+
         #make a throughput variable
         self.throughput = 0
 
@@ -78,7 +80,9 @@ class Intersection:
             for j in lane.contents:
                 if j != 0:
                     self.total_wait_time += 1
+                    j.tick()
             lane.tick()
+
         self.counter += 1
 
 
@@ -332,15 +336,18 @@ class Intersection:
         if self.phase == 0:
             if self.temp_counter >= 6:
                 self.phase = self.next_phase
+                self.hasRequiredChange = False
             self.temp_counter += 1
         else:
             self.temp_counter = 0
 
 
     def changePhase(self,phase_number):
-        self.phase = 0
-        self.temp_counter = 0
-        self.next_phase = phase_number
+        if self.hasRequiredChange == False:
+            self.hasRequiredChange = True
+            self.phase = 0
+            self.temp_counter = 0
+            self.next_phase = phase_number
 
 
     #a way to get information about the intersection for the visualizer

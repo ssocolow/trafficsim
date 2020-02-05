@@ -65,6 +65,10 @@ saved_best_nets = []
 #and make an output for stay the same phase
 
 #i found it, the overflow is caused by not normalizing the lane wait times, to normalize them, I think I should find a probabilitiy for each one based on total sum
+
+#new inputs
+#7 inputs for the 7 toward lanes
+#
 def RunSimulationTest(network):
     #clear the intersection
     I.clearIntersection()
@@ -76,11 +80,14 @@ def RunSimulationTest(network):
         if i % 2 == 0:
             I.addCar()
 
-        #get an 70 length array with 1s for cars and 0s for empty spots for all of the toward lanes
-        input_arr = I.get10InfoArrays()
+        # #get an 70 length array with 1s for cars and 0s for empty spots for all of the toward lanes
+        # input_arr = I.get10InfoArrays()
+
+        input_arr = []
 
         #get the wait times and then normalize them
         lane_wait_times = I.getLaneWaitTimes()
+
         #make it not 0 to avoid the dividing by 0 error
         sum_ = 0.1
         for num in lane_wait_times:
@@ -101,18 +108,21 @@ def RunSimulationTest(network):
         #input the current phase normalized between 1 and 0
         input_arr.append(I.phase / 10)
 
+       # print(input_arr)
         #feed the inputs through the network and get an output
         output_arr = network.feedforward(input_arr)
         #newlight is the index of the greatest output
         #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
         newlight = output_arr.index(max(output_arr))
-
+        #print(output_arr)
+        #print(newlight)
+        #print(I.phase)
         #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
         #otherwise, change the phase to the selected phase
-        if newlight == I.phase or newlight == 5:
+        if (newlight+1) == I.phase or newlight == 5:
             pass
         else:
-            I.changePhase(newlight)
+            I.changePhase(newlight + 1)
     #store the throughput and wait time for each neural net
     throughs.append(I.throughput)
     waits.append(I.total_wait_time)
@@ -208,7 +218,7 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[79],[16],[16],[16],[6]], mutation_rate = 0.1))
+            nets[0].append(nn.NeuralNetwork([[9],[16],[16],[16],[6]], mutation_rate = 0.1))
 
     for i in range(POPSIZE):
         #get the score of each network by finding absolute value of the difference between the network's output and the target
@@ -220,14 +230,17 @@ def epoch():
         #get an array of probablilites for each neural net
         probabilities.append(scores[i] / total)
 
+
     for i in range(POPSIZE):
-        for j in range(round(probabilities[i] * 100)):
+        for j in range(round(probabilities[i] * 50)):
             indicies_array.append(i)
+    #print(indicies_array)
 
     #add another array to store the next generation
     nets.append([])
 
     for i in range(POPSIZE):
+        #mutate_rate = nets[num_of_gens][0].
         nets[num_of_gens + 1].append(nets[num_of_gens][random.choice(indicies_array)].copy().mutate())
 
     num_of_gens += 1
@@ -241,7 +254,7 @@ def avg(arr):
     return total / len(arr)
 
 
-for i in range(2):
+for i in range(10):
     epoch()
     #scores.append(epoch())
     best_throughs.append(max(throughs))
@@ -249,6 +262,10 @@ for i in range(2):
 
     best_net_i = waits.index(best_waits[i])
     saved_best_nets.append(nets[i][best_net_i].get_data())
+
+    print(best_throughs)
+    print(best_waits)
+    print(i)
 
     avg_throughs.append(avg(throughs))
     avg_waits.append(avg(waits))
