@@ -122,10 +122,10 @@ def RunSimulationTest(network):
         newlight = output_arr.index(max(output_arr))
         #print(output_arr)
         #print(newlight)
-        #print(I.phase)
+        print(I.phase)
         #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
         #otherwise, change the phase to the selected phase
-        if (newlight+1) == I.phase or newlight == 5:
+        if (newlight+1) == I.phase:
             pass
         else:
             I.changePhase(newlight + 1)
@@ -203,7 +203,7 @@ def RunSimulationTest(network):
 
 
 #have global storing variables
-POPSIZE = 100
+POPSIZE = 1
 nets = []
 num_of_gens = 0
 
@@ -230,7 +230,7 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[10],[16],[16],[6]], mutation_rate = 0.02))
+            nets[0].append(nn.NeuralNetwork([[10],[16],[16],[5]], mutation_rate = 0.02))
 
     for i in range(POPSIZE):
         #get the score of each network by finding absolute value of the difference between the network's output and the target
@@ -243,7 +243,7 @@ def epoch():
         #get an array of probablilites for each neural net
         probabilities.append(scores[i] / total)
 
-    print(probabilities)
+    #print(probabilities)
 
     temp_probs = probabilities.copy()
     #maybe the best should get 30 spots
@@ -287,7 +287,7 @@ def avg(arr):
     return total / len(arr)
 
 
-for i in range(20):
+for i in range(3):
     epoch()
     #scores.append(epoch())
     best_throughs.append(max(throughs))

@@ -405,6 +405,7 @@ class Intersection:
         self.next_phase = 0
         self.total_wait_time = 0
         self.throughput = 0
+        self.time_on_phase = 0
 
 
     def getCarCount(self):
