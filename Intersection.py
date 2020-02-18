@@ -408,6 +408,8 @@ class Intersection:
         self.time_on_phase = 0
 
 
+    #function to return the number of cars in each lane divided by 10
+    #returns an array with length equal to number of toward lanes, which is 7
     def getCarCount(self):
         c = []
         for lane in self.toward_lanes:

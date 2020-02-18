@@ -34,61 +34,40 @@ for i in range(4):
 #make the intersection
 I = Intersection(toward, away)
 
-#store the networks througputs and wait times
+#store the networks' througputs and wait times
+#gets cleared every epoch
 throughs = []
 waits = []
 
+#stores average throughs and waits for all the generations
 avg_throughs = []
 avg_waits = []
 
+#stores the best throughput and the best wait time for all the generations
 best_throughs = []
 best_waits = []
 
+#store the best neural networks
 saved_best_nets = []
-#scores = []
 
-#the nets array is now controlled by the epoch function
-# #make the neural networks
-# nets = []
-# for i in range(100):
-#     nets.append(nn.NeuralNetwork([[78],[16],[16],[5]]))
-
+#have a variable to find the best neural network in the generation
+best_index = 0
 
 #MAKE THE 0s 0.01 instead of 0 to avoid the overflow error maybe
-
 
 #this will run the network through the simulation and return the total wait time generated
 #to get the inputs to the neural network, we need arrays for each lane with a 1 or 0 for if a car is there or not
 #we also need to get the wait time for each lane and divide it by 10 to make it closer to between 0 and 1
 #and we need to see if the light is red or not, and if it is put a 1, if not put a 0
 
-#could also add either one input or five inputs to tell the network the current state of the light, I think I should
-#and make an output for stay the same phase
 
-#i found it, the overflow is caused by not normalizing the lane wait times, to normalize them, I think I should find a probabilitiy for each one based on total sum
-
-#new inputs
-#7 inputs for the 7 toward lanes
-#
-
-
+#gets a neural net as input
+#returns output array from neural net feedforward
 def neuralNetDecide(net):
     input_arr = []
-    #get the wait times and then normalize them
-    #lane_wait_times = I.getLaneWaitTimes()
-    #print(lane_wait_times)
-    #make it not 0 to avoid the dividing by 0 error
-    # sum_ = 0.1
-    # for num in lane_wait_times:
-    #     sum_ += num
-    # normalized_wait_times = []
-    # for num in lane_wait_times:
-    #     normalized_wait_times.append(math.log(num+1)/8)
 
+    #put the normalized number of cars in each lane into the input array
     input_arr.extend(I.getCarCount())
-
-    #add the normalized wait times to the input array
-    #input_arr.extend(normalized_wait_times)
 
     #if all the lights are red which means the phases are switching input a 1, else input a 0
     if I.phase == 0:
@@ -96,49 +75,47 @@ def neuralNetDecide(net):
     else:
         input_arr.append(0)
 
-    #print(I.phase)
     #input the current phase normalized between 1 and 0
     input_arr.append(I.phase / 10)
 
+    #input the normalized amount of time the Intersection has stayed on the current phase
     input_arr.append(I.time_on_phase / 200)
 
-    #print(input_arr)
     #feed the inputs through the network and get an output
     output_arr = net.feedforward(input_arr)
-    #newlight is the index of the greatest output
-    #indicies 0 through 4 are for the 5 lights and index 5 is for keeping the phase the same
-    newlight = output_arr.index(max(output_arr))
-   # print(output_arr)
-    #print(newlight)
-    #print(I.phase)
-    #if the newlight is the current light or the keep phase the same output, do nothing to change the phase
-    #otherwise, change the phase to the selected phase
     return output_arr
-    # if (newlight+1) == I.phase:
-    #     pass
-    # else:
-    #     I.changePhase(newlight + 1)
 
 
+#get the wait times and then normalize them
+#returns an array with numbers between 0 and 1 for all of the toward lanes based on their wait time
+def getNormalizedWaitTime():
+    lane_wait_times = I.getLaneWaitTimes()
+    #make it not 0 to avoid the dividing by 0 error
+    sum_ = 0.1
+    for num in lane_wait_times:
+        sum_ += num
+    normalized_wait_times = []
+    for num in lane_wait_times:
+        #normalized_wait_times.append(math.log(num+1)/8)
+        normalized_wait_times.append(num/sum_)
+    return normalized_wait_times
 
-#network will only choose a phase to switch to
+
+#run the simulation test on the network and return the fitness score
 def RunSimulationTest(network):
     #clear the intersection
     I.clearIntersection()
-    #print(I.getLaneWaitTimes())
     for i in range(200):
-        #time.sleep(1)
         #move the intersection
         I.move()
+        print(I.phase)
         #every 2 time steps add a car
         if i % 2 == 0:
             I.addCar()
 
-        # #get an 70 length array with 1s for cars and 0s for empty spots for all of the toward lanes
-        # input_arr = I.get10InfoArrays()
-
-        #this is where the neural net decides
-        if I.time_on_phase >= 15:
+        #this is where the neural net decides what phase to switch to
+        #decides the phase only if it has spent at least 10 time steps on the current phase
+        if I.time_on_phase >= 10:
             if I.time_on_phase < 60:
                 output_array = neuralNetDecide(network)
                 newlight = output_array.index(max(output_array)) + 1
@@ -146,89 +123,26 @@ def RunSimulationTest(network):
                     pass
                 else:
                     I.changePhase(newlight)
+            #put a limit on how long it can do one phase
+            #if it goes over the limit, switch to the next highest index in the output array
             else:
                 output_array = neuralNetDecide(network)
                 output_array.remove(max(output_array))
                 newlight = output_array.index(max(output_array)) + 1
                 I.changePhase(newlight)
-      #  print(I.time_on_phase)
-        #print(I.phase)
 
-
-
-    #store the throughput and wait time for each neural net
+    #store the throughput and Intersection wait time for each neural net
     throughs.append(I.throughput)
-    n = 0
-    for lane in I.toward_lanes:
-        n += lane.wait_time
-    #print(n)
-
     waits.append(I.total_wait_time)
-    #return the total intersection wait time for a score
-    #normalize it somewhat to divide by 10
 
-    return I.throughput * I.throughput
-
-
-
+    #return the fitness
+    lane_waits = I.getLaneWaitTimes()
+    fitness = 1/sum(lane_waits)
+    return fitness
 
 
-#debugging
-#for i in range(100):
-#    I.addCar()
 
-# I.phase = 1
-# time_count = 0
-# phase_count = 1
-# saved_wait = []
-# saved_through = []
-# for j in range(100):
-#     for i in range(200):
-#         time_count += 1
-#         if i == 0:
-#             I.changePhase(1)
-#         if time_count % 20 == 0:
-#             if phase_count != 5:
-#                 phase_count += 1
-#                 I.changePhase(phase_count)
-#             else:
-#                 phase_count = 1
-#                 I.changePhase(phase_count)
-#         #time.sleep(1)
-#         I.move()
-#         if i % 2 == 0:
-#             I.addCar()
-#         #print(I.phase)
-#     saved_wait.append(I.total_wait_time)
-#     saved_through.append(I.throughput)
-#     I.clearIntersection()
-    #showsim.visualizeIntersection(i[0],i[1],i[2])
-    #led_test.turnAllOff()
-    #led_test.phaseState(I.phase)
-
-# for car in I.iic:
-#     print(car.origin)
-
-# I.print()
-# going_to_be_removed = []
-# for i in range(len(I.iic)):
-#     x = I.iic[i].move()
-#     print("results of being moved " + str(x))
-#     if x != None:
-#         I.away_lanes[x - 1].addx(I.iic[i])
-#         going_to_be_removed.append(I.iic[i])
-
-# for i in range(len(going_to_be_removed)):
-#     I.iic.remove(going_to_be_removed[i])
-
-# for car in I.iic:
-#     print(car.origin)
-
-# I.mapInIntersectionModel()
-
-# I.print()
-
-
+#do the neuroevolution with the epoch function
 #have global storing variables
 POPSIZE = 100
 nets = []
@@ -251,10 +165,10 @@ def epoch():
     #array with probablilites of each network based on its score / total score
     probabilities = []
 
-    #nets is going to have arrays which have generations in the big array
+    #nets is going to have arrays which store generations in the big array
     nets.append([])
 
-    #fill the first array in nets with randomly initialized neural nets
+    #make the mutation rate smaller as more generations have passed
     if num_of_gens < 30:
         mut_rate = 0.2
     elif num_of_gens >= 30 & num_of_gens < 60:
@@ -262,13 +176,13 @@ def epoch():
     else:
         mut_rate = 0.05
 
+    #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
             nets[0].append(nn.NeuralNetwork([[10],[16],[16],[5]], mutation_rate = mut_rate))
 
     for i in range(POPSIZE):
-        #get the score of each network by finding absolute value of the difference between the network's output and the target
-        #this will give us a smaller number for a better score, so to have a higher number for a higher score, we can do 1 divided by the score so lower score becomes higher score
+        #run the simulation test on each neural net
         scores.append(RunSimulationTest(nets[num_of_gens][i]))
         total += scores[i]
 
@@ -277,11 +191,13 @@ def epoch():
         #get an array of probablilites for each neural net
         probabilities.append(scores[i] / total)
 
+
     temp_probs = probabilities.copy()
 
     #maybe the best should get 30 spots
     #second best get 15
     #third best get 10
+    #after putting in these reserved spots, remove them from the temp_probs array so we can find the second best because it will now be the best
     for i in range(30):
         indicies_array.append(temp_probs.index(max(temp_probs)))
 
@@ -303,23 +219,25 @@ def epoch():
         if temp_probs[i] == max(temp_probs):
             temp_probs[i] = 0
 
-    for i in range(POPSIZE-55):
-        for j in range(round(probabilities[i] * 50)):
+    #add to the index array an amount of indicies equal to the nerual net's probability * 100
+    #more indicies in the array mean a better chance at being chosen more for the next generation
+    for i in range(POPSIZE):
+        for j in range(round(probabilities[i] * 100)):
             indicies_array.append(i)
-
-   # print(indicies_array)
 
     #add another array to store the next generation
     nets.append([])
 
+    #repopulate the next generation with random choices from the indicies array
     for i in range(POPSIZE):
-        #mutate_rate = nets[num_of_gens][0].
         nets[num_of_gens + 1].append(nets[num_of_gens][random.choice(indicies_array)].copy().mutate())
 
     num_of_gens += 1
     return scores
 
 
+
+#make a function to find the average of the array
 def avg(arr):
     total = 0
     for num in arr:
@@ -327,7 +245,8 @@ def avg(arr):
     return total / len(arr)
 
 
-for i in range(3):
+#run through a certain amount of generations
+for i in range(20):
     epoch()
     #scores.append(epoch())
     best_throughs.append(max(throughs))
@@ -336,15 +255,17 @@ for i in range(3):
     best_net_i = throughs.index(best_throughs[i])
     saved_best_nets.append(nets[i][best_net_i].get_data())
 
-    print(best_throughs)
-    print(best_waits)
-    print(i)
-
     avg_throughs.append(avg(throughs))
     avg_waits.append(avg(waits))
 
+    print(avg_throughs)
+    print(avg_waits)
+    print(i)
+
     waits = []
     throughs = []
+
+
 
 #write data to csv
 with open('data010.csv', 'w', newline='') as file:
@@ -358,6 +279,4 @@ with open('bestnet010.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow([saved_best_nets[index_]])
 
-print(time.time() - ts)
-
-
+print("This took " + str(time.time() - ts) + " seconds")
