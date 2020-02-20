@@ -81,6 +81,9 @@ def neuralNetDecide(net):
     #input the normalized amount of time the Intersection has stayed on the current phase
     input_arr.append(I.time_on_phase / 200)
 
+    #input the wait time of all the lanes which comes from the wait time of each car squared then summed
+    input_arr.extend(I.squareThenAddWaits())
+
     #feed the inputs through the network and get an output
     output_arr = net.feedforward(input_arr)
     return output_arr
@@ -105,10 +108,9 @@ def getNormalizedWaitTime():
 def RunSimulationTest(network):
     #clear the intersection
     I.clearIntersection()
-    for i in range(200):
+    for i in range(500):
         #move the intersection
         I.move()
-        print(I.phase)
         #every 2 time steps add a car
         if i % 2 == 0:
             I.addCar()
@@ -179,7 +181,7 @@ def epoch():
     #fill the first array in nets with randomly initialized neural nets
     if num_of_gens == 0:
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[10],[16],[16],[5]], mutation_rate = mut_rate))
+            nets[0].append(nn.NeuralNetwork([[17],[16],[16],[5]], mutation_rate = mut_rate))
 
     for i in range(POPSIZE):
         #run the simulation test on each neural net

@@ -117,7 +117,6 @@ class Car:
 
 
 
-
     #function to increase wait time
     def tick(self):
         self.wait_time += 1

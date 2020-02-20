@@ -421,6 +421,18 @@ class Intersection:
         return c
 
 
+    #function that returns a length 7 array with the wait times of the cars squared then added from each toward lane
+    def squareThenAddWaits(self):
+        output = []
+        for lane in self.toward_lanes:
+            sum_ = 0
+            for spot in lane.contents:
+                if spot != 0:
+                    sum_ += spot.wait_time * spot.wait_time
+            output.append(sum_/2500000)
+        return output
+
+
     #printing function to see everything in the intersection for debugging
     def print(self):
         print("Toward Lanes: ")
