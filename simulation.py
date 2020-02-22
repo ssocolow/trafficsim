@@ -248,26 +248,57 @@ def avg(arr):
 
 
 #run through a certain amount of generations
-for i in range(20):
-    epoch()
-    #scores.append(epoch())
-    best_throughs.append(max(throughs))
-    best_waits.append(min(waits))
+def evolve(how_many_gens):
+    for i in range(how_many_gens):
+        epoch()
+        #scores.append(epoch())
+        best_throughs.append(max(throughs))
+        best_waits.append(min(waits))
 
-    best_net_i = throughs.index(best_throughs[i])
-    saved_best_nets.append(nets[i][best_net_i].get_data())
+        best_net_i = throughs.index(best_throughs[i])
+        saved_best_nets.append(nets[i][best_net_i].get_data())
 
-    avg_throughs.append(avg(throughs))
-    avg_waits.append(avg(waits))
+        avg_throughs.append(avg(throughs))
+        avg_waits.append(avg(waits))
 
-    print(avg_throughs)
-    print(avg_waits)
-    print(i)
+        print(avg_throughs)
+        print(avg_waits)
+        print(i)
 
-    waits = []
-    throughs = []
+        waits = []
+        throughs = []
 
 
+#make a function to implement a first come, first serve approach which is similar to what is used in real life
+#when a car is detected in the middle of the lane (fourth element), a phase containing that lane is added to the queue
+#the yielding phase is always used (UP FOR DEBATE)
+
+#takes in how many time steps to run for and the probablility of a car spawning on each time step and how long the phases should be
+#returns Intersection's wait time and throughput
+def firstComeFirstServe(ticks, prob, time):
+    queue = []
+    I.clearIntersection()
+    for i in range(ticks):
+        I.move()
+        r = random.random()
+        if r < prob:
+            I.addCar()
+        for i in range(7):
+            #add to the queue if the last element in the lanes is a car and if that lane is not part of the current phase
+            if I.toward_lanes[i].contents[I.toward_lanes[i].len-1] != 0 and not(I.toward_lanes[i] in I.phases[I.phase]):
+                #only add the phase number to the queue if that phase number is not already in the queue
+                if (i == 0 or i == 1) and not(1 in queue):
+                    queue.append(1)
+                if (i == 2 or i == 3 or i == 5 or i == 6) and not(5 in queue):
+                    queue.append(5)
+                if i == 4 and not(3 in queue):
+                    queue.append(3)
+        if I.time_on_phase >= time:
+            I.changePhase(queue.pop(0))
+    w = I.total_wait_time
+    t = I.throughput
+    return [w, t]
+print(firstComeFirstServe(200,0.5,15))
 
 #write data to csv
 with open('data010.csv', 'w', newline='') as file:

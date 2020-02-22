@@ -396,6 +396,7 @@ class Intersection:
             lane.contents = [0,0,0,0,0,0,0,0,0,0]
 
         #defualt phase is phase 1 at the beginning
+        #either change this to 0 or initialize the phase at 1 instead of 0 at the beginning
         self.phase = 1
         self.iic = []
         self.in_intersection = [0,0,0,0,0,0,0,0,0,0,0,0]
