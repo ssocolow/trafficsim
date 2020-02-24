@@ -273,43 +273,88 @@ def evolve(how_many_gens):
 #when a car is detected in the middle of the lane (fourth element), a phase containing that lane is added to the queue
 #the yielding phase is always used (UP FOR DEBATE)
 
+#add to the queue only after phase is over
+#it can't add the same phase that it is currently on to the queue
+
 #takes in how many time steps to run for and the probablility of a car spawning on each time step and how long the phases should be
 #returns Intersection's wait time and throughput
-def firstComeFirstServe(ticks, prob, time):
+
+#boolean to see if the phase has started changing
+ischanged = True
+phases = [[],[1,2,7],[2,3,4],[5],[6,7],[3,4,6,7]]
+def firstComeFirstServe(ticks, prob, time_):
+    #make a queue and a storage for past phases variable so that we don't queue the past phase
     queue = []
+    past_phase = []
+    global ischanged
+
+    #clear the intersection
     I.clearIntersection()
     for i in range(ticks):
         I.move()
+        time.sleep(0.75)
+        I.print()
+        print(I.phase)
+        print(queue)
         r = random.random()
         if r < prob:
             I.addCar()
-        for i in range(7):
-            #add to the queue if the last element in the lanes is a car and if that lane is not part of the current phase
-            if I.toward_lanes[i].contents[I.toward_lanes[i].len-1] != 0 and not(I.toward_lanes[i] in I.phases[I.phase]):
-                #only add the phase number to the queue if that phase number is not already in the queue
-                if (i == 0 or i == 1) and not(1 in queue):
-                    queue.append(1)
-                if (i == 2 or i == 3 or i == 5 or i == 6) and not(5 in queue):
-                    queue.append(5)
-                if i == 4 and not(3 in queue):
-                    queue.append(3)
-        if I.time_on_phase >= time:
+
+        #the phase is over
+        if ischanged:
+            #loop over all of the toward lanes
+            for i in range(7):
+                #don't check the lanes that can do right on red
+                if i != 1 or i != 6:
+                    #add to the queue if the last element in the lanes is a car and if that lane is not part of the past phase
+                    if I.toward_lanes[i].contents[I.toward_lanes[i].len-1] != 0 and not(i in past_phase):
+                        #only add the phase number to the queue if that phase number is not already in the queue
+                        if (i == 0 or i == 1) and not(1 in queue):
+                            queue.append(1)
+                        if (i == 3 or i == 5 or i == 6) and not(5 in queue):
+                            queue.append(5)
+                        if i == 2 and not(2 in queue):
+                            queue.append(2)
+                        if i == 4 and not(3 in queue):
+                            queue.append(3)
+            ischanged = False
+        if I.time_on_phase >= time_ and (len(queue) != 0):
+            past_phase.append(phases[I.phase])
             I.changePhase(queue.pop(0))
+            ischanged = True
+
     w = I.total_wait_time
     t = I.throughput
     return [w, t]
-print(firstComeFirstServe(200,0.5,15))
+
+# print(firstComeFirstServe(200,0.5,15))
+
+f = []
+for i in range(1):
+    dat = []
+    out = firstComeFirstServe(200,0.5,15)
+    dat.append(i)
+    dat.append(out[0])
+    dat.append(out[1])
+    f.append(dat)
 
 #write data to csv
-with open('data010.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    for i in range(len(avg_waits)):
-        writer.writerow([i,avg_waits[i],avg_throughs[i],best_waits[i],best_throughs[i]])
+# with open('data010.csv', 'w', newline='') as file:
+#     writer = csv.writer(file)
+#     for i in range(len(avg_waits)):
+#         writer.writerow([i,avg_waits[i],avg_throughs[i],best_waits[i],best_throughs[i]])
 
-#find the best of the best
-index_ = best_waits.index(min(best_waits))
-with open('bestnet010.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow([saved_best_nets[index_]])
+# #find the best of the best
+# index_ = best_waits.index(min(best_waits))
+# with open('bestnet010.csv', 'w', newline='') as file:
+#     writer = csv.writer(file)
+#     writer.writerow([saved_best_nets[index_]])
 
-print("This took " + str(time.time() - ts) + " seconds")
+# print("This took " + str(time.time() - ts) + " seconds")
+
+#make a csv to store first come first serve data
+#each row has how many phase ticks, throughput, then wait time
+with open('firstComeFirstServe.csv','w',newline='') as file:
+    writer = csv.writer(file)
+    for i in range(len(f)):
+        writer.writerow([f[i][0],f[i][1],f[i][2]])

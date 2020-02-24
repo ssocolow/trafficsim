@@ -346,7 +346,7 @@ class Intersection:
 
 
     def changePhase(self,phase_number):
-        if self.hasRequiredChange == False:
+        if self.hasRequiredChange == False and self.next_phase != self.phase:
             self.hasRequiredChange = True
             self.phase = 0
             self.temp_counter = 0
