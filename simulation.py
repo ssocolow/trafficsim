@@ -269,8 +269,10 @@ def evolve(how_many_gens):
         throughs = []
 
 
+
+
 #make a function to implement a first come, first serve approach which is similar to what is used in real life
-#when a car is detected in the middle of the lane (fourth element), a phase containing that lane is added to the queue
+#when a car is detected in the last position in the lane (closest to the intersection), a phase containing that lane is added to the queue
 #the yielding phase is always used (UP FOR DEBATE)
 
 #add to the queue only after phase is over
@@ -280,34 +282,48 @@ def evolve(how_many_gens):
 #returns Intersection's wait time and throughput
 
 #boolean to see if the phase has started changing
-ischanged = True
+ischanged = False
+#store the lights that are in the different phases
 phases = [[],[1,2,7],[2,3,4],[5],[6,7],[3,4,6,7]]
+
 def firstComeFirstServe(ticks, prob, time_):
     #make a queue and a storage for past phases variable so that we don't queue the past phase
     queue = []
+    #make a past phase storage array so that I only add to the queue if the lane isn't part of the past phase
     past_phase = []
     global ischanged
 
-    #clear the intersection
+    #clear the intersection before starting
     I.clearIntersection()
+
+    #make the past phase equal to the lanes in phase 1 which is the default after clearing the intersection
+    past_phase.extend(phases[1])
+
+    #start and run the simulation for a number of time steps equal to the ticks input
     for i in range(ticks):
+        #move the intersection
         I.move()
-        time.sleep(0.75)
-        I.print()
-        print(I.phase)
-        print(queue)
+
+        #### debuging ####
+        # time.sleep(0.75)
+        # I.print()
+        # print(I.phase)
+        # print(queue)
+        ##################
+
+        #generate a random number between 0 and 1 and if it is less than the inputted probablility, a car is added to the intersection
         r = random.random()
         if r < prob:
             I.addCar()
 
-        #the phase is over
+        #ischanged is true if the phase is over
         if ischanged:
             #loop over all of the toward lanes
             for i in range(7):
                 #don't check the lanes that can do right on red
                 if i != 1 or i != 6:
                     #add to the queue if the last element in the lanes is a car and if that lane is not part of the past phase
-                    if I.toward_lanes[i].contents[I.toward_lanes[i].len-1] != 0 and not(i in past_phase):
+                    if I.toward_lanes[i].contents[I.toward_lanes[i].len-1] != 0 and not((i+1) in past_phase):
                         #only add the phase number to the queue if that phase number is not already in the queue
                         if (i == 0 or i == 1) and not(1 in queue):
                             queue.append(1)
@@ -317,10 +333,15 @@ def firstComeFirstServe(ticks, prob, time_):
                             queue.append(2)
                         if i == 4 and not(3 in queue):
                             queue.append(3)
+
+            #turn it off until the time on phase
             ischanged = False
-        if I.time_on_phase >= time_ and (len(queue) != 0):
-            past_phase.append(phases[I.phase])
-            I.changePhase(queue.pop(0))
+
+        if I.time_on_phase >= time_:
+            past_phase = []
+            past_phase.extend(phases[I.phase])
+            if (len(queue) != 0):
+                I.changePhase(queue.pop(0))
             ischanged = True
 
     w = I.total_wait_time
@@ -330,13 +351,16 @@ def firstComeFirstServe(ticks, prob, time_):
 # print(firstComeFirstServe(200,0.5,15))
 
 f = []
-for i in range(1):
-    dat = []
-    out = firstComeFirstServe(200,0.5,15)
-    dat.append(i)
-    dat.append(out[0])
-    dat.append(out[1])
-    f.append(dat)
+for i in range(50):
+    avgws = []
+    avgthroughs = []
+    for j in range(60):
+        out = firstComeFirstServe(200,0.25,i)
+        avgws.append(out[0])
+        avgthroughs.append(out[1])
+
+    f.append([i,avg(avgws),avg(avgthroughs)])
+    print(i)
 
 #write data to csv
 # with open('data010.csv', 'w', newline='') as file:

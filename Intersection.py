@@ -19,7 +19,8 @@ class Intersection:
         self.iic = []
 
         #which phase the intersection is on 0 equals all red lights
-        self.phase = 0
+        #start at 1 because it starts at 1 after clearing the intersection
+        self.phase = 1
 
         #make arrays with lanes going toward the intersection for each phase
         #these phases don't have yeilding conflicts that can arise (phase 1 through 3)
