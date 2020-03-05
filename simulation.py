@@ -275,94 +275,117 @@ def evolve(how_many_gens):
 #when a car is detected in the last position in the lane (closest to the intersection), a phase containing that lane is added to the queue
 #the yielding phase is always used (UP FOR DEBATE)
 
-#add to the queue only after phase is over
 #it can't add the same phase that it is currently on to the queue
 
 #takes in how many time steps to run for and the probablility of a car spawning on each time step and how long the phases should be
 #returns Intersection's wait time and throughput
 
-#boolean to see if the phase has started changing
-ischanged = False
-#store the lights that are in the different phases
+# #store the lights that are in the different phases
 phases = [[],[1,2,7],[2,3,4],[5],[6,7],[3,4,6,7]]
 
-def firstComeFirstServe(ticks, prob, time_):
+def firstComeFirstServe(ticks, prob, time_, debug):
     #make a queue and a storage for past phases variable so that we don't queue the past phase
     queue = []
     #make a past phase storage array so that I only add to the queue if the lane isn't part of the past phase
     past_phase = []
-    global ischanged
 
     #clear the intersection before starting
     I.clearIntersection()
 
-    #make the past phase equal to the lanes in phase 1 which is the default after clearing the intersection
-    past_phase.extend(phases[1])
+    #make the past phase equal to the lanes in the current phase which is the default after clearing the intersection
+    past_phase.extend(phases[I.phase])
 
     #start and run the simulation for a number of time steps equal to the ticks input
     for i in range(ticks):
+        if debug:
+            time.sleep(0.15)
+            I.print()
+            print(I.phase)
+            print(queue)
+
         #move the intersection
         I.move()
-
-        #### debuging ####
-        # time.sleep(0.75)
-        # I.print()
-        # print(I.phase)
-        # print(queue)
-        ##################
 
         #generate a random number between 0 and 1 and if it is less than the inputted probablility, a car is added to the intersection
         r = random.random()
         if r < prob:
             I.addCar()
 
-        #ischanged is true if the phase is over
-        if ischanged:
-            #loop over all of the toward lanes
-            for i in range(7):
-                #don't check the lanes that can do right on red
-                if i != 1 or i != 6:
-                    #add to the queue if the last element in the lanes is a car and if that lane is not part of the past phase
-                    if I.toward_lanes[i].contents[I.toward_lanes[i].len-1] != 0 and not((i+1) in past_phase):
-                        #only add the phase number to the queue if that phase number is not already in the queue
-                        if (i == 0 or i == 1) and not(1 in queue):
+        # #only add car to the intersection if the i modulus prob is equal to 0 (if prob is 2 then every 2 time steps a car is added)
+        # if i % prob == 0:
+        #     I.addCar()
+
+        #loop over all the toward lanes
+        for i in range(7):
+            #only add to the queue if the lane is not a right only lane
+            if i != 1 and i != 6:
+                #only add to the queue if the last spot in the lane (closest to the intersection) is a car
+                if I.toward_lanes[i].contents[I.toward_lanes[i].len - 1] != 0:
+                    #only add to the queue if the lane is not part of the past phase and is not part of the queue
+                    if (i + 1) not in past_phase:
+                        #if the lane is lane 1 add phase 1 to the queue only if phase 1 is not in queue
+                        #also only add the phase to the queue if the phase is not the intersection's next phase (when it is switching)
+                        if i == 0 and 1 not in queue and 1 != I.next_phase:
                             queue.append(1)
-                        if (i == 3 or i == 5 or i == 6) and not(5 in queue):
-                            queue.append(5)
-                        if i == 2 and not(2 in queue):
+                        #if the lane is lane 3 add phase 2 to the queue only if phase 2 is not in queue
+                        #also only add the phase to the queue if the phase is not the intersection's next phase (when it is switching)
+                        if i == 2 and 2 not in queue and 2 != I.next_phase:
                             queue.append(2)
-                        if i == 4 and not(3 in queue):
+                        #add phase 5 to the queue if the lane is 4 only if phase 5 is not in queue
+                        #also only add the phase to the queue if the phase is not the intersection's next phase (when it is switching)
+                        if i == 3 and 5 not in queue and 5 != I.next_phase:
+                            queue.append(5)
+                        #add phase 3 to the queue if the lane is 5 only if phase 3 is not in queue
+                        #also only add the phase to the queue if the phase is not the intersection's next phase (when it is switching)
+                        if i == 4 and 3 not in queue and 3 != I.next_phase:
                             queue.append(3)
+                        #add phase 5 to the queue if lane is 6 only if phase 5 is not in queue
+                        #also only add the phase to the queue if the phase is not the intersection's next phase (when it is switching)
+                        if i == 5 and not 5 in queue and 5 != I.next_phase:
+                            queue.append(5)
 
-            #turn it off until the time on phase
-            ischanged = False
-
-        if I.time_on_phase >= time_:
-            past_phase = []
+        #switch the phase to the first phase in the queue
+        if I.time_on_phase >= time_ and len(queue) != 0:
+            next_phase = queue.pop(0)
+            past_phase.clear()
+            I.changePhase(next_phase)
             past_phase.extend(phases[I.phase])
-            if (len(queue) != 0):
-                I.changePhase(queue.pop(0))
-            ischanged = True
 
     w = I.total_wait_time
     t = I.throughput
     return [w, t]
 
-# print(firstComeFirstServe(200,0.5,15))
 
-f = []
-for i in range(50):
-    avgws = []
-    avgthroughs = []
-    for j in range(60):
-        out = firstComeFirstServe(200,0.25,i)
-        avgws.append(out[0])
-        avgthroughs.append(out[1])
 
-    f.append([i,avg(avgws),avg(avgthroughs)])
-    print(i)
+def drun(x, p, t):
+    out = []
+    for i in range(x):
+        out.append(firstComeFirstServe(200,p,t,0))
+    print(out)
 
+def srun(p,t):
+    out = []
+    out.append(firstComeFirstServe(200,p,t,1))
+    print(out)
+
+
+def runFirstComeFirstServe(until, repeats):
+    f = []
+    for i in range(until):
+        avgws = []
+        avgthroughs = []
+        for j in range(repeats):
+            out = firstComeFirstServe(200,1,i,0)
+            avgws.append(out[0])
+            avgthroughs.append(out[1])
+
+        f.append([i,avg(avgws),avg(avgthroughs)])
+        print(i)
+    return f
+
+f = runFirstComeFirstServe(50,60)
 #write data to csv
+
 # with open('data010.csv', 'w', newline='') as file:
 #     writer = csv.writer(file)
 #     for i in range(len(avg_waits)):

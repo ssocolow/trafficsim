@@ -346,8 +346,8 @@ class Intersection:
             self.temp_counter = 0
 
 
-    def changePhase(self,phase_number):
-        if self.hasRequiredChange == False and self.next_phase != self.phase:
+    def changePhase(self,phase_number):        #not self.next_phase
+        if self.hasRequiredChange == False and phase_number != self.phase:
             self.hasRequiredChange = True
             self.phase = 0
             self.temp_counter = 0
@@ -396,7 +396,7 @@ class Intersection:
         for lane in self.away_lanes:
             lane.contents = [0,0,0,0,0,0,0,0,0,0]
 
-        #defualt phase is phase 1 at the beginning
+        #default phase is phase 1 at the beginning
         #either change this to 0 or initialize the phase at 1 instead of 0 at the beginning
         self.phase = 1
         self.iic = []
@@ -405,6 +405,7 @@ class Intersection:
         self.counter = 0
         self.temp_counter = 0
         self.next_phase = 0
+        self.hasRequiredChange = False
         self.total_wait_time = 0
         self.throughput = 0
         self.time_on_phase = 0
