@@ -151,12 +151,12 @@ class Intersection:
             else:
                 return False
         if car.away == 3:
-            if self.in_intersection[11] == 0:
+            if self.in_intersection[10] == 0:
                 return True
             else:
                 return False
         if car.away == 4:
-            if self.in_intersection[10] == 0:
+            if self.in_intersection[9] == 0:
                 return True
             else:
                 return False
