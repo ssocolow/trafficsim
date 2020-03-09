@@ -357,10 +357,68 @@ def firstComeFirstServe(ticks, prob, time_, debug):
 
 
 
+#make a function to get clock timed intersection data
+#takes in an array with phases to run, how long the phases are on, how many time steps to run the simulation, the probablility for a car to spawn
+#and a debug option
+
+#returns an array with total intersection wait time and throughput
+def clockTimed(phases_to_run, phase_length, time_steps, prob, debug):
+    I.clearIntersection()
+    phasecounter = 0
+    for i in range(time_steps):
+        if debug:
+            time.sleep(0.5)
+            I.print()
+            print(I.phase)
+
+        #move the intersection
+        I.move()
+
+        #generate a random number between 0 and 1 and if it is less than the inputted probablility, a car is added to the intersection
+        r = random.random()
+        if r < prob:
+            I.addCar()
+
+        if I.time_on_phase >= phase_length:
+            if phasecounter != len(phases_to_run) - 1:
+                phasecounter += 1
+            else:
+                phasecounter = 0
+            I.changePhase(phases_to_run[phasecounter])
+
+    w = I.total_wait_time
+    t = I.throughput
+
+    return [w,t]
+
+
+
+def runClockTimed(until, repeats):
+    f = []
+    for i in range(until):
+        avgws = []
+        avgthroughs = []
+        for j in range(repeats):
+            out = clockTimed([1,5,1,5,3],i,200,0.25,0)
+            avgws.append(out[0])
+            avgthroughs.append(out[1])
+
+        f.append([i,avg(avgws),avg(avgthroughs)])
+        print(i)
+    return f
+
+f = runClockTimed(50,60)
+
+
+# f = []
+# for i in range(100):
+#     dat = firstComeFirstServe(200,0.5,9,0)
+#     f.append([i, dat[0], dat[1]])
+
 def drun(x, p, t):
     out = []
     for i in range(x):
-        out.append(firstComeFirstServe(200,p,t,0))
+        out.append(clockTimed([1,5,1,5,3],7,200,0.5,0))
     print(out)
 
 def srun(p,t):
@@ -383,7 +441,7 @@ def runFirstComeFirstServe(until, repeats):
         print(i)
     return f
 
-f = runFirstComeFirstServe(50,60)
+#f = runFirstComeFirstServe(50,60)
 #write data to csv
 
 # with open('data010.csv', 'w', newline='') as file:
