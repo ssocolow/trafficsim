@@ -108,7 +108,7 @@ def getNormalizedWaitTime():
 def RunSimulationTest(network):
     #clear the intersection
     I.clearIntersection()
-    for i in range(500):
+    for i in range(200):
         #move the intersection
         I.move()
         #every 2 time steps add a car
@@ -280,7 +280,7 @@ def evolve(how_many_gens):
 #takes in how many time steps to run for and the probablility of a car spawning on each time step and how long the phases should be
 #returns Intersection's wait time and throughput
 
-# #store the lights that are in the different phases
+#store the lights that are in the different phases
 phases = [[],[1,2,7],[2,3,4],[5],[6,7],[3,4,6,7]]
 
 def firstComeFirstServe(ticks, prob, time_, debug):
@@ -407,13 +407,14 @@ def runClockTimed(until, repeats):
         print(i)
     return f
 
-f = runClockTimed(50,60)
-
-
+##########data collection##########
+#f = runClockTimed(50,60)
 # f = []
 # for i in range(100):
-#     dat = firstComeFirstServe(200,0.5,9,0)
+#     dat = clockTimed([1,2,3,4,5],9,200,0.5,0)
 #     f.append([i, dat[0], dat[1]])
+###################################
+
 
 def drun(x, p, t):
     out = []
@@ -433,7 +434,7 @@ def runFirstComeFirstServe(until, repeats):
         avgws = []
         avgthroughs = []
         for j in range(repeats):
-            out = firstComeFirstServe(200,1,i,0)
+            out = firstComeFirstServe(200,i/20,10,0)
             avgws.append(out[0])
             avgthroughs.append(out[1])
 
@@ -441,7 +442,7 @@ def runFirstComeFirstServe(until, repeats):
         print(i)
     return f
 
-#f = runFirstComeFirstServe(50,60)
+#f = runFirstComeFirstServe(40,60)
 #write data to csv
 
 # with open('data010.csv', 'w', newline='') as file:
