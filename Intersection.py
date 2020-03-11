@@ -372,6 +372,7 @@ class Intersection:
     def getLaneWaitTimes(self):
         output = []
         for lane in self.toward_lanes:
+            lane.tick()
             output.append(lane.wait_time)
         return output
 
@@ -424,7 +425,7 @@ class Intersection:
         return c
 
 
-    #function that returns a length 7 array with the wait times of the cars squared then added from each toward lane
+    #function that returns a length 7 array with the wait times of the cars squared then added from each toward lane then normalized
     def squareThenAddWaits(self):
         output = []
         dat = []
