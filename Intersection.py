@@ -439,7 +439,10 @@ class Intersection:
         for s in dat:
             total_sum += s
         for i in range(7):
-            output.append(dat[i]/total_sum)
+            if total_sum == 0:
+                output.append(0)
+            else:
+                output.append(dat[i]/total_sum)
         return output
 
 

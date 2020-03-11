@@ -139,17 +139,19 @@ def evolve():
     if num_of_gens == 0:
         nets.append([])
         for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([17,32,16,5]))
+            nets[0].append(nn.NeuralNetwork([[17],[32],[16],[5]]))
 
     #loop through all of the nets of the current generation
     for net in nets[num_of_gens]:
         net.score = RunSimulationTest(net, 200, 0.5)
+        print(str(nets[num_of_gens].index(net)) + ' / ' + str(POPSIZE))
 
     #get ready to spawn the next generation
     nets.append([])
 
     #make the probabilities for the networks to be picked
-    nets[num_of_gens + 1].append(ga.nextGeneration(nets[num_of_gens]))
+    nets[num_of_gens + 1].extend(ga.nextGeneration(nets[num_of_gens]))
 
     #increment the number of generations
     num_of_gens += 1
+
