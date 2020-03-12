@@ -42,6 +42,10 @@ I = Intersection(toward, away)
 throughs = []
 waits = []
 
+#stores the best throughput and the best wait time for all the generations
+best_throughs = []
+best_waits = []
+
 #store the best neural networks
 saved_best_nets = []
 
@@ -146,6 +150,10 @@ def evolve():
         net.score = RunSimulationTest(net, 200, 0.5)
         print(str(nets[num_of_gens].index(net)) + ' / ' + str(POPSIZE))
 
+    #get the data for the best of each generation
+    best_waits.append(min(waits[num_of_gens]))
+    best_throughs.append(max(throughs[num_of_gens]))
+
     #get ready to spawn the next generation
     nets.append([])
 
@@ -155,3 +163,14 @@ def evolve():
     #increment the number of generations
     num_of_gens += 1
 
+
+#run evolve certain number of times
+def runEvolve(n):
+    for i in range(n):
+        evolve()
+
+
+runEvolve(10)
+
+
+print("This took " + str(time.time() - ts) + " seconds")
