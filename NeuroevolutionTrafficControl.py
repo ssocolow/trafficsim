@@ -164,13 +164,33 @@ def evolve():
     num_of_gens += 1
 
 
+
 #run evolve certain number of times
 def runEvolve(n):
     for i in range(n):
         evolve()
 
 
-runEvolve(10)
+runEvolve(1)
 
 
 print("This took " + str(time.time() - ts) + " seconds")
+
+#save wait data to csv
+with open('n_wait_data.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    for i in range(len(waits)):
+        writer.writerow(waits[i])
+
+#save throughput data to csv
+with open('n_through_data.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    for i in range(len(throughs)):
+        writer.writerow(throughs[i])
+
+#save best brain to csv
+with open('n_best_brain.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    b_net_gen_i = best_throughs.index(max(best_throughs))
+    b_net_i = throughs[b_net_gen_i].index(max(throughs[b_net_gen_i]))
+    writer.writerow(nets[b_net_gen_i][b_net_i].get_data())
