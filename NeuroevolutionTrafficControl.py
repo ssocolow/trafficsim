@@ -6,7 +6,7 @@ from Car import Car
 import time
 #get access to the other directory so we can import nn.py
 import sys
-sys.path.insert(1,'/home/ubuntu/environment/Neural-Network-Python-Lib')
+sys.path.insert(1,'/home/simon/programming/Neural-Network-Python-Lib')
 #import neural network functionality
 import nn
 #import random selection for neuroevolution
@@ -21,7 +21,10 @@ import math
 import ga
 
 #how many neural nets are in each generation
-POPSIZE = 200
+POPSIZE = 500
+
+#how many generations to run
+EPOCHS = 100
 
 #keep track of time
 ts = time.time()
@@ -148,7 +151,7 @@ def evolve():
     #loop through all of the nets of the current generation
     for net in nets[num_of_gens]:
         net.score = RunSimulationTest(net, 200, 0.5)
-        print(str(nets[num_of_gens].index(net)) + ' / ' + str(POPSIZE))
+        print(str(nets[num_of_gens].index(net)) + ' / ' + str(POPSIZE) + '          ' + 'gen ' + str(num_of_gens) + ' out of ' + str(EPOCHS))
 
     #get the data for the best of each generation
     best_waits.append(min(waits[num_of_gens]))
@@ -171,7 +174,7 @@ def runEvolve(n):
         evolve()
 
 
-runEvolve(1)
+runEvolve(EPOCHS)
 
 
 print("This took " + str(time.time() - ts) + " seconds")
