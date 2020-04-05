@@ -2,7 +2,9 @@
 Traffic simulation
 
 This is a traffic simulation of the Stillwater - Broadway intersection in Bangor, Maine.
-Neural network agents use the simulation to control the lights and then collect data like car throughput and wait time.
+Algorithms like neural network agents and conventional algorithms like first come first serve and clock timed
+use the simulation to control the lights and then collect data like car throughput and wait time
+which are metrics by which to evalute different algorithms.
 By Simon Socolow and Nhan Ngo
 
 The presentation of this project is now on youtube:
