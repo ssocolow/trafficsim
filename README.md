@@ -42,8 +42,11 @@ If you are on debian or ubuntu based linux systems with the apt package manager 
 ### Module Files
 
 Car.py contains car functionality
+
 Lane.py conatains lane functionality
+
 Intersection.py contains intersection functionality
+
 showsim.py contains graphical visualization functionality
 
 ---
