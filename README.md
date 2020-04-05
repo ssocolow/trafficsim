@@ -16,16 +16,21 @@ https://drive.google.com/file/d/1PqmWoTthooViPLWQH_-LLIsqouMrHyIQ/view?usp=shari
 or here if you don't want to use google drive:
 https://github.com/ssocolow/Pastebin/blob/master/Ngo_Nhan_Socolow_Simon_Research_Paper.pdf
 
-##Dependencies
+## Dependencies
 Many files require the Neural-Network-Python-Lib library for neural network functionality
 https://github.com/ssocolow/Neural-Network-Python-Lib
+
 Also make sure to change the sys.path.insert function at the top of some files to the path on your computer to the directory
 containing the neural network library.  This is a very common source of errors.
 
+
 If you want to see the graphical representation of the intersection (functionality which resides in showsim.py)
 you need to download the py5 graphics library
+
 https://github.com/ssocolow/py5
+
 The py5 library uses tkinter (the python graphics module) which usually comes preinstalled on systems.  
 If it isn't installed, you will need to get it.  
 If you are on debian or ubuntu based linux systems with the apt package manager you can get tkinter using this command:
+
 `sudo apt-get install python-tk`
