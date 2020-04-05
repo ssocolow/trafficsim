@@ -36,3 +36,18 @@ If it isn't installed, you will need to get it.
 If you are on debian or ubuntu based linux systems with the apt package manager you can get tkinter using this command:
 
 `sudo apt-get install python-tk`
+
+
+## Files
+### Module Files
+Car.py contains car functionality
+Lane.py conatains lane functionality
+Intersection.py contains intersection functionality
+showsim.py contains graphical visualization functionality
+---
+### Running files
+(files meant to be run)
+
+simulation.py can be used to collect data on or visualize the first come first serve and clock timed algorithms as well as loading in a neural network to look at what it is doing using the graphical representation of the intersection.
+
+NeuroevolutionTrafficControl.py can be used to do and collect data on the neuroevolution process as well as save the best neural net at the end
