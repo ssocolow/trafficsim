@@ -18,11 +18,13 @@ https://github.com/ssocolow/Pastebin/blob/master/Ngo_Nhan_Socolow_Simon_Research
 
 ## Dependencies
 Many files require the Neural-Network-Python-Lib library for neural network functionality
+
 https://github.com/ssocolow/Neural-Network-Python-Lib
 
 Also make sure to change the sys.path.insert function at the top of some files to the path on your computer to the directory
 containing the neural network library.  This is a very common source of errors.
 
+---
 
 If you want to see the graphical representation of the intersection (functionality which resides in showsim.py)
 you need to download the py5 graphics library
