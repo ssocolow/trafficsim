@@ -10,5 +10,6 @@ https://youtu.be/Gt9PwPbdT-0
 
 The (outdated but still useful to learn about the project) research paper can be found here:
 https://drive.google.com/file/d/1PqmWoTthooViPLWQH_-LLIsqouMrHyIQ/view?usp=sharing
+
 or here if you don't want to use google drive:
 https://github.com/ssocolow/Pastebin/blob/master/Ngo_Nhan_Socolow_Simon_Research_Paper.pdf
