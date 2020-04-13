@@ -53,13 +53,6 @@ saved_best_nets = []
 #have a variable to find the best neural network in the generation
 best_index = 0
 
-#MAKE THE 0s 0.01 instead of 0 to avoid the overflow error maybe
-
-#this will run the network through the simulation and return the total wait time generated
-#to get the inputs to the neural network, we need arrays for each lane with a 1 or 0 for if a car is there or not
-#we also need to get the wait time for each lane and divide it by 10 to make it closer to between 0 and 1
-#and we need to see if the light is red or not, and if it is put a 1, if not put a 0
-
 
 #gets a neural net as input
 #returns output array from neural net feedforward
@@ -144,129 +137,12 @@ def RunSimulationTest(network):
 
 
 
-#do the neuroevolution with the epoch function
-#have global storing variables
-POPSIZE = 100
-nets = []
-num_of_gens = 0
-
-def epoch():
-    #use the global variables
-    global nets
-    global num_of_gens
-
-    #array to store scores
-    scores = []
-
-    #sum of all the scores
-    total = 0
-
-    #an array to store an amount of index numbers for each neural net according to their probability
-    indicies_array = []
-
-    #array with probablilites of each network based on its score / total score
-    probabilities = []
-
-    #nets is going to have arrays which store generations in the big array
-    nets.append([])
-
-    #make the mutation rate smaller as more generations have passed
-    if num_of_gens < 30:
-        mut_rate = 0.2
-    elif num_of_gens >= 30 & num_of_gens < 60:
-        mut_rate = 0.1
-    else:
-        mut_rate = 0.05
-
-    #fill the first array in nets with randomly initialized neural nets
-    if num_of_gens == 0:
-        for i in range(POPSIZE):
-            nets[0].append(nn.NeuralNetwork([[17],[16],[16],[5]], mutation_rate = mut_rate))
-
-    for i in range(POPSIZE):
-        #run the simulation test on each neural net
-        scores.append(RunSimulationTest(nets[num_of_gens][i]))
-        total += scores[i]
-
-
-    for i in range(POPSIZE):
-        #get an array of probablilites for each neural net
-        probabilities.append(scores[i] / total)
-
-
-    temp_probs = probabilities.copy()
-
-    #maybe the best should get 30 spots
-    #second best get 15
-    #third best get 10
-    #after putting in these reserved spots, remove them from the temp_probs array so we can find the second best because it will now be the best
-    for i in range(30):
-        indicies_array.append(temp_probs.index(max(temp_probs)))
-
-    for i in range(len(temp_probs)):
-        if temp_probs[i] == max(temp_probs):
-            temp_probs[i] = 0
-
-    for i in range(15):
-        indicies_array.append(temp_probs.index(max(temp_probs)))
-
-    for i in range(len(temp_probs)):
-        if temp_probs[i] == max(temp_probs):
-            temp_probs[i] = 0
-
-    for i in range(10):
-        indicies_array.append(temp_probs.index(max(temp_probs)))
-
-    for i in range(len(temp_probs)):
-        if temp_probs[i] == max(temp_probs):
-            temp_probs[i] = 0
-
-    #add to the index array an amount of indicies equal to the nerual net's probability * 100
-    #more indicies in the array mean a better chance at being chosen more for the next generation
-    for i in range(POPSIZE):
-        for j in range(round(probabilities[i] * 100)):
-            indicies_array.append(i)
-
-    #add another array to store the next generation
-    nets.append([])
-
-    #repopulate the next generation with random choices from the indicies array
-    for i in range(POPSIZE):
-        nets[num_of_gens + 1].append(nets[num_of_gens][random.choice(indicies_array)].copy().mutate())
-
-    num_of_gens += 1
-    return scores
-
-
-
 #make a function to find the average of the array
 def avg(arr):
     total = 0
     for num in arr:
         total += num
     return total / len(arr)
-
-
-#run through a certain amount of generations
-def evolve(how_many_gens):
-    for i in range(how_many_gens):
-        epoch()
-        #scores.append(epoch())
-        best_throughs.append(max(throughs))
-        best_waits.append(min(waits))
-
-        best_net_i = throughs.index(best_throughs[i])
-        saved_best_nets.append(nets[i][best_net_i].get_data())
-
-        avg_throughs.append(avg(throughs))
-        avg_waits.append(avg(waits))
-
-        print(avg_throughs)
-        print(avg_waits)
-        print(i)
-
-        waits = []
-        throughs = []
 
 
 
@@ -443,24 +319,19 @@ def runFirstComeFirstServe(until, repeats):
     return f
 
 #f = runFirstComeFirstServe(40,60)
-#write data to csv
 
+#write data to csv
 # with open('data010.csv', 'w', newline='') as file:
 #     writer = csv.writer(file)
 #     for i in range(len(avg_waits)):
 #         writer.writerow([i,avg_waits[i],avg_throughs[i],best_waits[i],best_throughs[i]])
 
-# #find the best of the best
-# index_ = best_waits.index(min(best_waits))
-# with open('bestnet010.csv', 'w', newline='') as file:
-#     writer = csv.writer(file)
-#     writer.writerow([saved_best_nets[index_]])
 
-# print("This took " + str(time.time() - ts) + " seconds")
+print("This took " + str(time.time() - ts) + " seconds")
 
 #make a csv to store first come first serve data
 #each row has how many phase ticks, throughput, then wait time
-with open('firstComeFirstServe.csv','w',newline='') as file:
-    writer = csv.writer(file)
-    for i in range(len(f)):
-        writer.writerow([f[i][0],f[i][1],f[i][2]])
+# with open('firstComeFirstServe.csv','w',newline='') as file:
+#     writer = csv.writer(file)
+#     for i in range(len(f)):
+#         writer.writerow([f[i][0],f[i][1],f[i][2]])
