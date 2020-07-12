@@ -60,3 +60,8 @@ showsim.py contains graphical visualization functionality
 simulation.py can be used to collect data on or visualize the first come first serve and clock timed algorithms as well as loading in a neural network to look at what it is doing using the graphical representation of the intersection.
 
 NeuroevolutionTrafficControl.py can be used to do and collect data on the neuroevolution process as well as save the best neural net at the end
+
+### Curent Status
+
+There seems to either be a bug or a glitch where sometimes cars dissapear or appear or move where they aren't supposed to be.  Probably one of the checks if a car
+can do a right turn or a left turn is slightly off.
