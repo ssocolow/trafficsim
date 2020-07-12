@@ -10,6 +10,9 @@ By Simon Socolow and Nhan Ngo
 The presentation of this project is now on youtube:
 https://youtu.be/Gt9PwPbdT-0
 
+A visualization of the first come first serve algorithm using the library is also on youtube:
+https://www.youtube.com/watch?v=jWmylUEwOsA
+
 The (outdated but still useful to learn about the project) research paper can be found here:
 https://drive.google.com/file/d/1PqmWoTthooViPLWQH_-LLIsqouMrHyIQ/view?usp=sharing
 
