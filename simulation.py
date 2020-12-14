@@ -174,7 +174,7 @@ def firstComeFirstServe(ticks, prob, time_, debug):
     #start and run the simulation for a number of time steps equal to the ticks input
     for i in range(ticks):
         if debug:
-            time.sleep(0.5)
+            time.sleep(0.4)
             d = I.getInfoArrays()
             showsim.visualizeIntersection(d[0],d[1],d[2])
             #I.print()
