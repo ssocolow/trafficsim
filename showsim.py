@@ -1,3 +1,6 @@
+#be able to get py5
+import sys
+sys.path.append("/home/simon/programming/py5")
 #import py5 functionality
 from py5 import *
 import time

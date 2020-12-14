@@ -6,7 +6,7 @@ from Car import Car
 import time
 #get access to the other directory so we can import nn.py
 import sys
-sys.path.insert(1,'/home/ubuntu/environment/Neural-Network-Python-Lib')
+sys.path.insert(1,'/home/simon/programming/Neural-Network-Python-Lib')
 #import neural network functionality
 import nn
 #import random selection for neuroevolution
@@ -15,7 +15,7 @@ import random
 #store 1 row per generation with columns of avg wait, avg throughput, best wait, best throughput
 import csv
 #import visualization functionality
-#import showsim
+import showsim
 #import led_test
 import math
 
@@ -174,10 +174,12 @@ def firstComeFirstServe(ticks, prob, time_, debug):
     #start and run the simulation for a number of time steps equal to the ticks input
     for i in range(ticks):
         if debug:
-            time.sleep(0.15)
-            I.print()
-            print(I.phase)
-            print(queue)
+            time.sleep(0.5)
+            d = I.getInfoArrays()
+            showsim.visualizeIntersection(d[0],d[1],d[2])
+            #I.print()
+            #print(I.phase)
+            #print(queue)
 
         #move the intersection
         I.move()
@@ -231,7 +233,8 @@ def firstComeFirstServe(ticks, prob, time_, debug):
     t = I.throughput
     return [w, t]
 
-
+#testing out the visual
+firstComeFirstServe(20000,0.5,12,1)
 
 #make a function to get clock timed intersection data
 #takes in an array with phases to run, how long the phases are on, how many time steps to run the simulation, the probablility for a car to spawn
@@ -266,8 +269,6 @@ def clockTimed(phases_to_run, phase_length, time_steps, prob, debug):
     t = I.throughput
 
     return [w,t]
-
-
 
 def runClockTimed(until, repeats):
     f = []
