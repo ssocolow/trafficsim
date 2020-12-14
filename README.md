@@ -10,6 +10,9 @@ By Simon Socolow and Nhan Ngo
 The presentation of this project is now on youtube:
 https://youtu.be/Gt9PwPbdT-0
 
+A visualization of the first come first serve algorithm using the library is also on youtube:
+https://www.youtube.com/watch?v=jWmylUEwOsA
+
 The (outdated but still useful to learn about the project) research paper can be found here:
 https://drive.google.com/file/d/1PqmWoTthooViPLWQH_-LLIsqouMrHyIQ/view?usp=sharing
 
@@ -57,3 +60,8 @@ showsim.py contains graphical visualization functionality
 simulation.py can be used to collect data on or visualize the first come first serve and clock timed algorithms as well as loading in a neural network to look at what it is doing using the graphical representation of the intersection.
 
 NeuroevolutionTrafficControl.py can be used to do and collect data on the neuroevolution process as well as save the best neural net at the end
+
+### Curent Status
+
+There seems to either be a bug or a glitch where sometimes cars dissapear or appear or move where they aren't supposed to be.  Probably one of the checks if a car
+can do a right turn or a left turn is slightly off.
