@@ -2,7 +2,7 @@
 Traffic simulation
 
 ![Example of GUI simulation]
-(https://ssocolow.github.com/images/trafficsimguisample.png)
+(https://raw.githubusercontent.com/trafficsim/master/trafficsimguisample.png)
 
 This is a traffic simulation of the Stillwater - Broadway intersection in Bangor, Maine.
 Algorithms like neural network agents and conventional algorithms like first come first serve and clock timed
