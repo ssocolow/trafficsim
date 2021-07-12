@@ -1,8 +1,8 @@
 # trafficsim
-Traffic simulation
 
 <!--- ![Example of GUI simulation](https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png) --->
 <p align="center">
+Traffic simulation
 <img width=500 height=500 src="https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png">
 </p>
   
