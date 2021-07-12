@@ -2,8 +2,10 @@
 Traffic simulation
 
 <!--- ![Example of GUI simulation](https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png) --->
-<img align="center" width=500 height=500 src="https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png">
-
+<p align="center">
+<img width=500 height=500 src="https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png">
+</p>
+  
 This is a traffic simulation of the Stillwater - Broadway intersection in Bangor, Maine.
 Algorithms like neural network agents and conventional algorithms like first come first serve and clock timed
 use the simulation to control the lights and then collect data like car throughput and wait time
