@@ -5,7 +5,7 @@ Traffic simulation
 </p>
 <!--- ![Example of GUI simulation](https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png) --->
 <p align="center">
-<img width=500 height=500 src="https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png">
+<img width=425 height=425 src="https://github.com/ssocolow/trafficsim/blob/master/trafficsimguisample.png">
 </p>
   
 This is a traffic simulation of the Stillwater - Broadway intersection in Bangor, Maine.
