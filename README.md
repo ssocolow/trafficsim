@@ -70,5 +70,4 @@ NeuroevolutionTrafficControl.py can be used to do and collect data on the neuroe
 
 ### Curent Status
 
-There seems to either be a bug or a glitch where sometimes cars dissapear or appear or move where they aren't supposed to be.  Probably one of the checks if a car
-can do a right turn or a left turn is slightly off.
+There might be a bug or a glitch where sometimes cars dissapear or appear or move where they aren't supposed to be.  One of the checks if a car can do a right turn or a left turn might be slightly off.

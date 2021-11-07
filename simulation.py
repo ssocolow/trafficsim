@@ -146,7 +146,7 @@ def avg(arr):
 
 
 
-
+ticktime = 0.1
 #make a function to implement a first come, first serve approach which is similar to what is used in real life
 #when a car is detected in the last position in the lane (closest to the intersection), a phase containing that lane is added to the queue
 #the yielding phase is always used (UP FOR DEBATE)
@@ -174,7 +174,7 @@ def firstComeFirstServe(ticks, prob, time_, debug):
     #start and run the simulation for a number of time steps equal to the ticks input
     for i in range(ticks):
         if debug:
-            time.sleep(0.4)
+            time.sleep(ticktime)
             d = I.getInfoArrays()
             showsim.visualizeIntersection(d[0],d[1],d[2])
             #I.print()
